@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from MVDA import MVDATracker
 
-cap = cv2.VideoCapture('data/video/15.mp4')
+cap = cv2.VideoCapture('data/video/6.mp4')
 def crop_bottom_half(image):
     cropped_img = image[int(image.shape[0]/2):image.shape[0]]
     return cropped_img
@@ -10,7 +10,7 @@ def crop_bottom_half(image):
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 smp = crop_bottom_half(cap.read()[1])
 out = cv2.VideoWriter('output.mp4',fourcc, 15, (smp.shape[1],  smp.shape[0]*3))
-fgbg = MVDATracker(init_frames=50, detecting_rate=1, detections_per_denoising=5, max_recovery_distance= 50 )
+fgbg = MVDATracker(init_frames=50, detecting_rate=1, detections_per_denoising=5, framerate=20, max_recovery_distance= 50 )
 try:
     while(1):
         ret, frame = cap.read()
