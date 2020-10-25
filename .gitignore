@@ -1,5 +1,4 @@
-data/video
-data/main_boat_position
-data/camera_gps_logs
+raw_data/
 models/
 output.*
+__pycache__

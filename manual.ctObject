@@ -1,0 +1,18 @@
+{
+    "gps_lat": 32.70297,
+    "gps_lon": -117.23463100000001,
+    "focallength_x_px": 723.5008103727715,
+    "focallength_y_px": 723.5008103727715,
+    "center_x_px": 360.0,
+    "center_y_px": 640.0,
+    "image_height_px": 1280,
+    "image_width_px": 720,
+    "sensor_height_mm": 4.55,
+    "sensor_width_mm": 6.17,
+    "elevation_m": 33.77879324082222,
+    "tilt_deg": 102.39328468852088,
+    "roll_deg": -86.52829477918324,
+    "heading_deg": 59.45697729684553,
+    "pos_x_m": 0,
+    "pos_y_m": 0
+}

@@ -33,7 +33,8 @@ class MVDATracker():
         self.background_mask = None
         self.frames_read = 0
         self.last_states = []
-
+    def getLandmarkVessel(self):
+        pass 
     def update(self, frame):  # MVDA Run Every Second
         self.frames_read += 1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
