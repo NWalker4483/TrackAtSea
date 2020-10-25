@@ -1,5 +1,11 @@
+'''
+A Naïve approach to assigning a GPS value to every frame of each video by 
+subtracting the time estimates for each frame and finding the 
+GPS reading with the minimum absolute difference 
+'''
 import xml.etree.ElementTree as ET
 import pickle 
+
 def time2secs(time): # Convert a string representation of a H:M:S into the number of seconds
     Hours, Min, Sec = [int(i) for i in time.split(":")]
     return 360 * Hours + 60 * Min + Sec
@@ -7,7 +13,7 @@ tree = ET.parse('data/main_boat_position/onboard_gps_source1/AI Tracks at Sea Hi
 root = tree.getroot()
 times = list()
 for entry in root.iter("trkpt"):
-    times.append((entry.find("time").text.split("T")[1][:-1],entry.attrib["lat"],entry.attrib["lat"]))
+    times.append((entry.find("time").text.split("T")[1][:-1],entry.attrib["lat"],entry.attrib["lon"]))
 
 for i in range(6,23):
     video_info_file = f"data/camera_gps_logs/SOURCE_GPS_LOG_{i}_cleaned.csv"
