@@ -1,3 +1,5 @@
-data/
+data/video
+data/main_boat_position
+data/camera_gps_logs
 models/
 output.*
