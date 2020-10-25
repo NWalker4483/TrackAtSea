@@ -9,7 +9,7 @@ def crop_bottom_half(image):
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 smp = crop_bottom_half(cap.read()[1])
-out = cv2.VideoWriter('output.mp4',fourcc, 15, (smp.shape[1],  smp.shape[0]*3))
+out = cv2.VideoWriter('output.mvda.mp4',fourcc, 15, (smp.shape[1],  smp.shape[0]*3))
 fgbg = MVDATracker(init_frames=50, detecting_rate=1, detections_per_denoising=5, framerate=20, max_recovery_distance= 50 )
 try:
     while(1):
