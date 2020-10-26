@@ -25,7 +25,6 @@ class ManualTracker():
                 self.pos[0] += 5
         return self.pos
     
-
     def update(self,frame):
         self.last_frame = frame 
         key = cv2.waitKey(1) & 0xFF

@@ -2,6 +2,7 @@ import argparse
 import cameratransform as ct
 import pickle
 import cv2
+import csv
 import numpy as np
 
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -9,7 +10,7 @@ parser.add_argument('--video_file', type=str, default="raw_data/video/6.mp4",
                     help='Video file name (MP4 format)')
 parser.add_argument('--num_detections', type=int, default=25,
                     help='')
-parser.add_argument('--camera_file_path', type=str, default="generated_data/frame2gps/frame2gps.6.list",
+parser.add_argument('--camera_file_path', type=str, default="generated_data/transforms/manual_transform.json",
                     help='')
 parser.add_argument('--cam_lat', type=float, default = 32.70297, 
                     help='Latitude of source in decimal degrees (i.e. where the camera is mounted')
@@ -53,9 +54,11 @@ else:
     print("Some Error Msg")
     exit()
 
-out_file = open("out.csv","w+")
-lm_points_px = [] # Boat Posisition in each frame
-pairs = []
+out_file = open("output.csv","w+")
+fields = ['Frame No.','Seconds from Start', 'Vessel ID','Latitude', 'Longitude']  
+csvwriter = csv.writer(out_file)  
+csvwriter.writerow(fields)  
+        
 try:      
     while video.isOpened():
         ret, frame = video.read()
@@ -63,22 +66,10 @@ try:
 
         tracker.update(frame)
         if frames_read % (frame_count // args.num_detections) == 0:
+            Vessel_ID = 0
             x, y = tracker.getLandmarkVessel()
-            pairs.append((lm_points_space[frames_read],[x, y]))
+            lat, lon, _ = cam.gpsFromImage([x,y])
+            csvwriter.writerow([frames_read + 1,frames_read//24, Vessel_ID, lat, lon])
         frames_read += 1
-
-    for space_coords, px in pairs:
-        pass # Write to file 
-    if True:
-        #import matplotlib.pyplot as plot
-        base, detected = zip(*pairs)
-        def drawPath(path,img):
-
-            path
-            return img 
-        
-    # cam.plotTrace()
-    # plt.tight_layout()
 finally:
-    cam.save(f"generated_data/transforms/{args.tracker_type.lower()}.ctObject") # ? maybe add a time to the filename
     out_file.close()

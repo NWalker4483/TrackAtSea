@@ -33,6 +33,7 @@ class MVDATracker():
         self.background_mask = None
         self.frames_read = 0
         self.last_states = []
+
     def getLandmarkVessel(self):
         pass 
     def update(self, frame):  # MVDA Run Every Second
@@ -121,27 +122,22 @@ class MVDATracker():
             self.TB[ID][0], self.TB[ID][1] = self.TB[ID][1], []
             self.last_states.append((ID, self.TB[ID][0][-1]))
 
-    def contiansWater(self, frame):  # Water Detection Algortihm
-        return False
-        # img=cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-        # blur=cv2.bilateralFilter(img, 9, 75, 75)
-        # edges=cv2.Canny(img, 100, 200)  # TODO: Change to Parameters
-        # im2, contours, hierarchy=cv.findContours(
-        #     edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        # if len(contours) < 3:
-        #     pass
-
-
-"""
-Algorithm 3 Water Detection Algorithm
-1:  Convert an image to grayscale, use bilateral filter, and blur the image;
-2:  Detect edges using Canny edge detector and find contours;
-3:  For each contour:
-4:       Calculate length of the contour (using curve approximation);
-5:       Calculate the contour area;
-6:       When the length is less than 100 or the area is less than 30, discard the contour;
-7:  Calculate average length of the remaining contours and find the longest contour;
-8:  Return water when number of contours is less than 3, the maximum length is less than 250, and average length is less than 40.
-"""
+    def contiansWater(self, clip):  # Water Detection Algortihm
+        clip = cv2.bilateralFilter(clip, 9, 75, 75)
+        clip = cv2.blur(clip, (self.blur_size, self.blur_size))
+        edges = cv2.Canny(clip, 100, 200)  # TODO: Change to Parameters
+        contours, _ = cv2.findContours(
+                edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)  
+        if 0 < len(contours) < 3:
+            lengths = []
+            for cnt in contours: 
+                _len = cv2.arcLength(cnt)
+                area = cv2.contourArea(cnt)
+                if _len > 100 or area < 30:
+                    continue
+                lengths.append(_len)
+            return (sum(lengths)/len(lengths) < 40) and (max(lengths) < 250)
+        else:
+            return False
 if __name__ == "__main__":
     a = MVDATracker()
