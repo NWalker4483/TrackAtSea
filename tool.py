@@ -55,10 +55,10 @@ else:
     exit()
 
 out_file = open("output.csv","w+")
-fields = ['Frame No.','Seconds from Start', 'Vessel ID','Latitude', 'Longitude']  
+fields = ['Frame No.','Seconds from Start', 'Vessel ID','Latitude', 'Longitude','X','Y']  
 csvwriter = csv.writer(out_file)  
 csvwriter.writerow(fields)  
-        
+
 try:      
     while video.isOpened():
         ret, frame = video.read()
@@ -69,7 +69,7 @@ try:
             Vessel_ID = 0
             x, y = tracker.getLandmarkVessel()
             lat, lon, _ = cam.gpsFromImage([x,y])
-            csvwriter.writerow([frames_read + 1,frames_read//24, Vessel_ID, lat, lon])
+            csvwriter.writerow([frames_read, frames_read//24, Vessel_ID, lat, lon, x, y])
         frames_read += 1
 finally:
     out_file.close()
