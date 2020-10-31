@@ -2,3 +2,5 @@ raw_data/
 models/
 output.*
 __pycache__
+venv
+.vscode
