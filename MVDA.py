@@ -2,6 +2,7 @@ import cv2
 import bb_utils as bb
 # A Python based implementation of the algorithm described on https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6928767/ s
 
+
 class MVDATracker():
     def __init__(self,  init_frames=250, blur_size=21, framerate=30,
                  learning_rate=3, detecting_rate=1,
@@ -29,13 +30,15 @@ class MVDATracker():
         self.min_object_area = min_object_area
         self.max_recovery_distance = max_recovery_distance
 
-        self.TB = dict() # {ID: [[Round_(n-1) Detections],[Round_(n) Detections]]}
+        # {ID: [[Round_(n-1) Detections],[Round_(n) Detections]]}
+        self.TB = dict()
         self.background_mask = None
         self.frames_read = 0
         self.last_states = []
 
     def getLandmarkVessel(self):
-        pass 
+        pass
+
     def update(self, frame):  # MVDA Run Every Second
         self.frames_read += 1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -69,7 +72,7 @@ class MVDATracker():
                     continue
                 if ((box_width/box_height) > self.max_HW_ratio) or ((box_height/box_width) > self.max_HW_ratio) or ((box_height*box_width) < self.min_object_area):
                     continue
-                if self.contiansWater(bb.crop_to(gray,rect)):  # * Not Implemented
+                if self.contiansWater(bb.crop_to(gray, rect)):  # * Not Implemented
                     continue
                 boxes.add(rect)
             boxes = bb.merge_boxes(boxes)  # Merge Overlapping Boxes
@@ -89,7 +92,7 @@ class MVDATracker():
 
                         dist_value = bb.distance_between_centers(box, old_box)
                         min_distance = dist_value if dist_value < min_distance else min_distance
-                    
+
                     dist_scores[ID] = min_distance
                     overlap_scores[ID] = max_overlap_score
 
@@ -127,10 +130,10 @@ class MVDATracker():
         clip = cv2.blur(clip, (self.blur_size, self.blur_size))
         edges = cv2.Canny(clip, 100, 200)  # TODO: Change to Parameters
         contours, _ = cv2.findContours(
-                edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)  
+            edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         if 0 < len(contours) < 3:
             lengths = []
-            for cnt in contours: 
+            for cnt in contours:
                 _len = cv2.arcLength(cnt)
                 area = cv2.contourArea(cnt)
                 if _len > 100 or area < 30:
@@ -139,5 +142,7 @@ class MVDATracker():
             return (sum(lengths)/len(lengths) < 40) and (max(lengths) < 250)
         else:
             return False
+
+
 if __name__ == "__main__":
     a = MVDATracker()
