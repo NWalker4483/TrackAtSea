@@ -1,4 +1,5 @@
 import argparse
+
 import cameratransform as ct
 import pickle
 import cv2
@@ -6,9 +7,12 @@ import csv
 import numpy as np
 
 parser = argparse.ArgumentParser(description='Process some integers.')
+
+parser.add_argument('--video_num', type=int, default=None)
+
 parser.add_argument('--video_file', type=str, default="raw_data/video/6.mp4",
                     help='Video file name (MP4 format)')
-parser.add_argument('--num_detections', type=int, default=25,
+parser.add_argument('--num_detections', type=int, default=15,
                     help='')
 parser.add_argument('--camera_file_path', type=str, default="generated_data/transforms/manual_transform.json",
                     help='')
@@ -20,7 +24,9 @@ parser.add_argument('--tracker_type', type=str, default="Manual",
                     help='')
 
 args = parser.parse_args()
-
+if args.video_num != None:
+    args.video_file = f"raw_data/video/{args.video_num}.mp4"
+    
 video = cv2.VideoCapture(args.video_file)
 cam = ct.load_camera(args.camera_file_path)
 cam.setGPSpos(args.cam_lat, args.cam_long)
@@ -55,7 +61,7 @@ else:
     exit()
 
 out_file = open("output.csv","w+")
-fields = ['Frame No.','Seconds from Start', 'Vessel ID','Latitude', 'Longitude','X','Y']  
+fields = ['Frame No.', 'Vessel ID','Latitude', 'Longitude','X','Y']  
 csvwriter = csv.writer(out_file)  
 csvwriter.writerow(fields)  
 
@@ -69,7 +75,7 @@ try:
             Vessel_ID = 0
             x, y = tracker.getLandmarkVessel()
             lat, lon, _ = cam.gpsFromImage([x,y])
-            csvwriter.writerow([frames_read, frames_read//24, Vessel_ID, lat, lon, x, y])
+            csvwriter.writerow([frames_read, Vessel_ID, lat, lon, x, y])
         frames_read += 1
 finally:
     out_file.close()

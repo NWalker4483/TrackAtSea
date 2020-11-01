@@ -8,18 +8,48 @@ import cv2
 import csv
 import numpy as np
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--video_file', type=str, default="raw_data/video/6.mp4",
-                    help='Video file name (MP4 format)')
-parser.add_argument('--num_detections', type=int, default=25,
-                    help='')
-parser.add_argument('--camera_file_path', type=str, default="generated_data/transforms/manual_transform.json",
-                    help='')
-parser.add_argument('--cam_lat', type=float, default = 32.70297, 
-                    help='Latitude of source in decimal degrees (i.e. where the camera is mounted')
-parser.add_argument('--cam_long', type=float, default = -117.23463100000001,
-                    help='Longitude of source in decimal degrees (i.e. where the camera is mounted')
-parser.add_argument('--tracker_type', type=str, default="Manual",
-                    help='')
+import geopy.distance
 
+
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+
+parser.add_argument('--video_num', type=int, default=None)
+
+parser.add_argument('--pred_file', type=str, default="output.csv",
+                    help='Video file name (MP4 format)')
+parser.add_argument('--gps_list_file', type=str, default="generated_data/frame2gps/frame2gps.6.list",
+                    help='')
 args = parser.parse_args()
+
+if args.video_num != None:
+    args.pred_file
+    args.gps_list_file = f"generated_data/frame2gps/frame2gps.{args.video_num}.list"
+
+with open(args.gps_list_file, "rb") as fp:   # Unpickling
+    lm_points_gps = np.array(pickle.load(fp))
+
+pred_frames = dict()
+failed = 0 
+with open(args.pred_file,"r") as f:
+    content = f.readlines()
+for entry in content[1:]: # Skip Header 
+    frame_id, _, lat, lon, _, _ = entry.split(",")
+    if lat != "nan" and lon != "nan":
+        pred_frames[int(frame_id)] = (float(lat),float(lon))
+    else:
+        failed += 1 
+
+MSE = 0 
+ERR = [] 
+for frame in pred_frames:
+    ERR.append(geopy.distance.geodesic(pred_frames[frame], lm_points_gps[frame]).m)
+    MSE += ERR[-1] ** 2 
+
+print(f"""\
+
+Nan Estimates: {failed}
+Average Error (m): {sum(ERR)/len(pred_frames)}
+Standard Dev (+/- m): {np.std(ERR)}
+Mean Squared Error: {MSE/len(pred_frames)}
+""")
