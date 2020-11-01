@@ -46,7 +46,7 @@ elif args.tracker_type == "Manual":
     from Manual import ManualTracker
 
     def drag(event, x, y, flags, param):
-        global dragging, tracker
+        global dragging, tracker # Defined in fit_transfomr.py drag function 
         if dragging:
             tracker.pos = [x, y]
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -77,14 +77,9 @@ try:
         if frames_read % (frame_count // args.num_detections) == 0:
             Vessel_ID = 0
             x, y = tracker.getLandmarkVessel()
-<<<<<<< HEAD
-            lat, lon, _ = cam.gpsFromImage([x,y])
-            csvwriter.writerow([frames_read, Vessel_ID, lat, lon, x, y])
-=======
             lat, lon, _ = cam.gpsFromImage([x, y])
             csvwriter.writerow(
                 [frames_read, frames_read//24, Vessel_ID, lat, lon, x, y])
->>>>>>> 1505f4ea43484933364984d1294276e40c3e19d0
         frames_read += 1
 finally:
     out_file.close()

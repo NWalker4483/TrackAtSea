@@ -78,12 +78,10 @@ elif args.tracker_type == "Manual":
     tracker = ManualTracker()
     dragging = False
 else:
-    print("Some Error Msg")
     exit()
 
 lm_points_px = []  # Boat Posisition in each frame
 pairs = []
-<<<<<<< HEAD
 try:      
         while video.isOpened():
             ret, frame = video.read()
@@ -112,42 +110,3 @@ finally:
     cam.save(f"generated_data/transforms/{args.tracker_type.lower()}_transform.json") # ? maybe add a time to the filename
 
 # cv2.calibrateCamera([np.array([(0,0,0)])],np.array([(0,0,0)]), (10,10),None,None)
-=======
-try:
-    while video.isOpened():
-        ret, frame = video.read()
-
-        if not ret:
-            break
-        tracker.update(frame)
-        if frames_read % (frame_count // args.num_detections) == 0:
-            x, y = tracker.getLandmarkVessel()
-            pairs.append((lm_points_space[frames_read], [x, y]))
-        frames_read += 1
-
-    for space_coords, px in pairs:
-        cam.addLandmarkInformation(np.array(px), space_coords, [3, 3, 10])
-    # Fit Camera Parameters
-    print("Fitting Transform")
-    trace = cam.metropolis([
-        ct.FitParameter("elevation_m", lower=0, upper=100, value=10),
-        ct.FitParameter("tilt_deg", lower=0, upper=180, value=80),
-        ct.FitParameter("heading_deg", lower=-180, upper=180, value=-77),
-        ct.FitParameter("roll_deg", lower=-180, upper=180, value=0)
-    ], iterations=500)
-    if True:
-        #import matplotlib.pyplot as plot
-        base, detected = zip(*pairs)
-
-        def drawPath(path, img):
-
-            path
-            return img
-
-    # cam.plotTrace()
-    # plt.tight_layout()
-finally:
-    # ? maybe add a time to the filename
-    cam.save(
-        f"generated_data/transforms/{args.tracker_type.lower()}_transform.json")
->>>>>>> 1505f4ea43484933364984d1294276e40c3e19d0

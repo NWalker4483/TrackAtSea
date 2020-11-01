@@ -2,7 +2,7 @@ raw_data/
 models/
 output.*
 __pycache__
-test.*.py
+test.*.*
 venv
 .vscode
 .DS_Store
