@@ -3,3 +3,6 @@ models/
 output.*
 __pycache__
 test.*.py
+venv
+.vscode
+.DS_Store

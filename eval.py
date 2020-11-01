@@ -18,7 +18,15 @@ parser.add_argument('--video_num', type=int, default=None)
 
 parser.add_argument('--pred_file', type=str, default="output.csv",
                     help='Video file name (MP4 format)')
-parser.add_argument('--gps_list_file', type=str, default="generated_data/frame2gps/frame2gps.6.list",
+parser.add_argument('--num_detections', type=int, default=25,
+                    help='')
+parser.add_argument('--camera_file_path', type=str, default="generated_data/transforms/manual_transform.json",
+                    help='')
+parser.add_argument('--cam_lat', type=float, default=32.70297,
+                    help='Latitude of source in decimal degrees (i.e. where the camera is mounted')
+parser.add_argument('--cam_long', type=float, default=-117.23463100000001,
+                    help='Longitude of source in decimal degrees (i.e. where the camera is mounted')
+parser.add_argument('--tracker_type', type=str, default="Manual",
                     help='')
 args = parser.parse_args()
 

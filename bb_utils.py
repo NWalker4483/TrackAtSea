@@ -67,7 +67,8 @@ def intersection_over_union(boxA, boxB):
     # return the intersection over union value
     return iou
 
-def interesection_area(boxA,boxB):
+
+def interesection_area(boxA, boxB):
     boxA = list(boxA)
     boxB = list(boxB)
     # Convert from cv2 to (xy,x,y)
@@ -89,6 +90,7 @@ def distance_between_centers(boxA, boxB):
     x1, y1 = boxA[0] + (boxA[2] // 2), boxA[1] + (boxA[3] // 2)
     x2, y2 = boxB[0] + (boxB[2] // 2), boxB[1] + (boxB[3] // 2)
     return (((x1-x2)**2)+((y1-y2)**2)) ** .5
+
 
 def crop_to(img, box):
     return img[box[1]:box[1]+box[3], box[0]:box[0]+box[2]]
