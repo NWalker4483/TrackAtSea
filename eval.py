@@ -15,9 +15,9 @@ parser.add_argument('--num_detections', type=int, default=25,
                     help='')
 parser.add_argument('--camera_file_path', type=str, default="generated_data/transforms/manual_transform.json",
                     help='')
-parser.add_argument('--cam_lat', type=float, default = 32.70297, 
+parser.add_argument('--cam_lat', type=float, default=32.70297,
                     help='Latitude of source in decimal degrees (i.e. where the camera is mounted')
-parser.add_argument('--cam_long', type=float, default = -117.23463100000001,
+parser.add_argument('--cam_long', type=float, default=-117.23463100000001,
                     help='Longitude of source in decimal degrees (i.e. where the camera is mounted')
 parser.add_argument('--tracker_type', type=str, default="Manual",
                     help='')
