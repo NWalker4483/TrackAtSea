@@ -32,5 +32,5 @@ def rip_frames(vid_path, out_path=None):
             print("Specified directory does not exist")
 
 if __name__ == "__main__":
-    for i in range(6,14):
+    for i in [6,7,9,15,18]:
         rip_frames(f"raw_data/video/{i}.mp4","generated_data/images/")

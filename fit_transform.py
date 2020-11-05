@@ -56,7 +56,7 @@ elif args.tracker_type == "DEEP":
     pass
 
 elif args.tracker_type == "Manual":
-    from Manual import ManualTracker
+    from trackers.Manual import ManualTracker
     def drag(event, x, y, flags, param): 
         global dragging, tracker    
         if dragging:
