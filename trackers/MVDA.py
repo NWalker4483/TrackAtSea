@@ -61,7 +61,7 @@ class MVDATracker():
         if (self.frames_read % (self.framerate // self.learning_rate) == 0):
             self.background_mask = self.backSub.apply(prepped_frame)
 
-        # Call the SUA Fucntion   5*(30//10)
+        # Call the SUA Fucntion   5 * (30//10)
         if (self.detections_since_denoising == self.detections_per_denoising):
             self.detections_since_denoising = 0
             self.StatusUpdateAlgorithm()
@@ -118,10 +118,10 @@ class MVDATracker():
                 new_id = self.ID # 0 if len(self.TB) == 0 else max(self.TB) + 1
                 self.ID += 1
                 self.TB[new_id] = [[(self.frames_read, new_id, box)], [(self.frames_read, new_id, box)]]
-        out = []
+        out = set()
         for i in self.TB:
-            out += [self.TB[i][1][j]
-                for j in range(len(self.TB[i][1]))]
+            for j in range(len(self.TB[i][1])):
+                out.add(self.TB[i][1][j])
         return out
 
     def StatusUpdateAlgorithm(self):  # Is called every 5 Seconds
