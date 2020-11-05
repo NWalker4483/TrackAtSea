@@ -1,5 +1,10 @@
+
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
 import cv2
-import bb_utils as bb
+import utils.bb as bb
 # A Python based implementation of the algorithm described on https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6928767/ s
 
 class MVDATracker():
@@ -34,11 +39,14 @@ class MVDATracker():
         self.background_mask = None
         self.frames_read = 0
         self.last_states = []
+        self.detections = []
+        self.ID = 0 
         
     def getAllDetections(self):
-        pass
+        return self.detections
+
     def getLandmarkVessel(self):
-        pass
+        return self.TB[min(self.TB)[1][-1]]
 
     def update(self, frame):  # MVDA Run Every Second
         self.frames_read += 1
@@ -84,14 +92,14 @@ class MVDATracker():
                 for ID in self.TB:
                     max_overlap_score = -1
                     min_distance = self.max_recovery_distance
-                    min_angle_difference = self.max_recovery_distance  # WARN: Not Used
+                    # min_angle_difference = self.max_recovery_distance  # WARN: Not Used
 
                     # Compare to the previous round of detections
                     for old_box in self.TB[ID][0]:
-                        overlap_score = bb.interesection_area(box, old_box)
+                        overlap_score = bb.interesection_area(box, old_box[-1])
                         max_overlap_score = overlap_score if overlap_score > max_overlap_score else max_overlap_score
 
-                        dist_value = bb.distance_between_centers(box, old_box)
+                        dist_value = bb.distance_between_centers(box, old_box[-1])
                         min_distance = dist_value if dist_value < min_distance else min_distance
 
                     dist_scores[ID] = min_distance
@@ -102,18 +110,18 @@ class MVDATracker():
                 closest_box_ID = min(dist_scores, key=lambda x: dist_scores[x])
 
                 if overlap_scores[best_scoring_ID] > 0:
-                    self.TB[best_scoring_ID][1].append(box)
+                    self.TB[best_scoring_ID][1].append((self.frames_read, best_scoring_ID, box))
                     continue
                 if dist_scores[closest_box_ID] < self.max_recovery_distance:
-                    self.TB[closest_box_ID][1].append(box)
+                    self.TB[closest_box_ID][1].append((self.frames_read, closest_box_ID, box))
                     continue
-                new_id = 0 if len(self.TB) == 0 else max(self.TB) + 1
-                self.TB[new_id] = [[box], [box]]
+                new_id = self.ID # 0 if len(self.TB) == 0 else max(self.TB) + 1
+                self.ID += 1
+                self.TB[new_id] = [[(self.frames_read, new_id, box)], [(self.frames_read, new_id, box)]]
         out = []
         for i in self.TB:
-            if len(self.TB[i][1]) > 0:
-                out += [(i, self.TB[i][1][j])
-                        for j in range(len(self.TB[i][1]))]
+            out += [self.TB[i][1][j]
+                for j in range(len(self.TB[i][1]))]
         return out
 
     def StatusUpdateAlgorithm(self):  # Is called every 5 Seconds
@@ -124,7 +132,8 @@ class MVDATracker():
                 del self.TB[ID]
                 continue
             self.TB[ID][0], self.TB[ID][1] = self.TB[ID][1], []
-            self.last_states.append((ID, self.TB[ID][0][-1]))
+            self.last_states.append(self.TB[ID][0][-1])
+            self.detections
 
     def contiansWater(self, clip):  # Water Detection Algortihm
         clip = cv2.bilateralFilter(clip, 9, 75, 75)
@@ -146,4 +155,52 @@ class MVDATracker():
 
 
 if __name__ == "__main__":
-    a = MVDATracker()
+    import numpy as np
+    import cv2
+
+    cap = cv2.VideoCapture('raw_data/video/6.mp4')
+
+
+    def crop_bottom_half(image):
+        cropped_img = image[int(image.shape[0]/2):image.shape[0]]
+        return cropped_img
+
+
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    smp = crop_bottom_half(cap.read()[1])
+    out = cv2.VideoWriter('output.mvda.mp4', fourcc, 15,
+                        (smp.shape[1],  smp.shape[0]*3))
+    fgbg = MVDATracker(init_frames=50, detecting_rate=3, detections_per_denoising=5,
+                    framerate=20, max_recovery_distance=50, max_HW_ratio=4)
+    try:
+        while(1):
+            ret, frame = cap.read()
+            frame = crop_bottom_half(frame)
+            rects = fgbg.update(frame)
+            mask = fgbg.background_mask
+            res = cv2.bitwise_and(frame, frame, mask=mask)
+            for rect in rects:
+                _, ID, rect = rect
+                x, y, w, h = rect
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 1)
+                # cv2.putText(frame,f' {ID} ',(x+w+10,y+h),0,0.3,(0,255,255))
+            for rect in fgbg.last_states:
+                _, ID, rect = rect
+                x, y, w, h = rect
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                cv2.putText(frame, f'Boat {ID} Detected ',
+                            (x+w+10, y+h), 0, 0.3, (0, 255, 0))
+
+            view = cv2.vconcat(
+                [frame, res, cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)])
+            out.write(view)
+            cv2.imshow('frame', view)
+            k = cv2.waitKey(1) & 0xff
+            if k == 27:
+                break
+    finally:
+        cap.release()
+        out.release()
+        cv2.destroyAllWindows()
+

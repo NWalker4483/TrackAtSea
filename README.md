@@ -54,6 +54,7 @@ There are 3 independent datasets:
 3) Video footage on the video boat
 
 ## Easy:
+
 * data/video/6.mp4
 * data/video/7.mp4
 * data/video/9.mp4
