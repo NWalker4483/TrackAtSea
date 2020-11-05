@@ -10,8 +10,6 @@ import numpy as np
 
 import geopy.distance
 
-
-
 parser = argparse.ArgumentParser(description='Process some integers.')
 
 parser.add_argument('--video_num', type=int, default=None)
@@ -20,8 +18,8 @@ parser.add_argument('--pred_file', type=str, default="output.csv",
                     help='Video file name (MP4 format)')
 parser.add_argument('--gps_list_file', type=str, default="generated_data/frame2gps/frame2gps.6.list",
                     help='')
+                    
 args = parser.parse_args()
-
 if args.video_num != None:
     args.pred_file
     args.gps_list_file = f"generated_data/frame2gps/frame2gps.{args.video_num}.list"

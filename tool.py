@@ -62,7 +62,7 @@ else:
     print("Some Error Msg")
     exit()
 
-out_file = open("output.csv","w+")
+out_file = open(f"output.{args.video_num}.{args.tracker_type.lower()}.csv","w+")
 fields = ['Frame No.', 'Vessel ID','Latitude', 'Longitude','X','Y']  
 csvwriter = csv.writer(out_file)  
 csvwriter.writerow(fields)  
@@ -79,7 +79,7 @@ try:
             x, y = tracker.getLandmarkVessel()
             lat, lon, _ = cam.gpsFromImage([x, y])
             csvwriter.writerow(
-                [frames_read, frames_read//24, Vessel_ID, lat, lon, x, y])
+                [frames_read, Vessel_ID, lat, lon, x, y])
         frames_read += 1
 finally:
     out_file.close()
