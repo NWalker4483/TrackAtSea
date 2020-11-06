@@ -9,9 +9,20 @@ https://www.researchgate.net/publication/2766576_Numerical_Methods_for_Model--Ba
 https://www.youtube.com/watch?v=HNfPbw-1e_w
 https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_calib3d/py_calibration/py_calibration.html
 
-Calib 
+Calibrate from  
 https://www.fdxlabs.com/calculate-x-y-z-real-world-coordinates-from-a-single-camera-using-opencv/
 
-homoGriffey
+Homography
 https://www.youtube.com/watch?v=bRyUvt0ZnU0
 https://www.youtube.com/watch?v=MlaIWymLCD8
+
+GCloud Setup
+https://towardsdatascience.com/building-image-detection-with-google-cloud-automl-8b9cf2b8074b
+
+
+Ran, Zhang. (2019). Re: What is best way to  calibration camera from single image?. Retrieved from: https://www.researchgate.net/post/What_is_best_way_to_calibration_camera_from_single_image/5d356e6ec7d8abb83153e637/citation/download. 
+
+Georgiev, Mihail. (2019). Re: What is best way to  calibration camera from single image?. Retrieved from: https://www.researchgate.net/post/What_is_best_way_to_calibration_camera_from_single_image/5d36cb0a979fdc84d074bde2/citation/download. 
+
+Homography Decomposition 
+https://dsp.stackexchange.com/questions/2736/step-by-step-camera-pose-estimation-for-visual-tracking-and-planar-markers
