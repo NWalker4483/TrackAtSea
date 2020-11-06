@@ -1,5 +1,9 @@
+import os, sys, inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
 import cv2
-import bb_utils as bb
+import utils.bb as bb
 import imageai
 from trackers.MVDA import MVDATracker
 # Aided moving vehicle detection algorithm
@@ -16,6 +20,7 @@ class AMVDATracker():
             min_object_height, max_HW_ratio,\
             min_object_area, detections_per_denoising,\
             max_recovery_distance)
+            
         self.frames_per_round = 0 
         self.frames_in_round = []
         self.scaling_factor = scaling_factor

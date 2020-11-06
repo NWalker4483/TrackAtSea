@@ -62,7 +62,7 @@ else:
     print("Some Error Msg")
     exit()
 
-out_file = open(f"output.{args.video_num}.{args.tracker_type.lower()}.csv","w+")
+out_file = open(f"generated_data/outputs/{args.video_num}.{args.tracker_type.lower()}.csv","w+")
 fields = ['Frame No.', 'Vessel ID','Latitude', 'Longitude','X','Y']  
 csvwriter = csv.writer(out_file)  
 csvwriter.writerow(fields)  
