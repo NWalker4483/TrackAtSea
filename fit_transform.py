@@ -55,37 +55,6 @@ if args.tracker_type == "MVDA":
 elif args.tracker_type == "DEEP":
     pass
 
-elif args.tracker_type == "Manual":
-    from trackers.Manual import ManualTracker
-    def drag(event, x, y, flags, param): 
-        global dragging, tracker    
-        if dragging:
-            tracker.pos = [x,y] 
-        if event == cv2.EVENT_LBUTTONDOWN:
-            dragging = True
-        # check to see if the left mouse button was released
-        elif event == cv2.EVENT_LBUTTONUP:
-            dragging = False
-    cv2.namedWindow("Tracker Frame")
-    cv2.setMouseCallback("Tracker Frame", drag)
-    tracker = ManualTracker()
-    dragging = False
-else:
-    print("Some Error Msg")
-    exit()
-
-lm_points_px = [] # Boat Posisition in each frame
-pairs = []
-try:      
-    while video.isOpened():
-        ret, frame = video.read()
-        if not ret: break
-        
-        tracker.update(frame)
-        if frames_read % (frame_count // args.num_detections) == 0:
-            x, y = tracker.getLandmarkVessel()
-            pairs.append((lm_points_space[frames_read],[x, y]))
-        frames_read += 1
 
     for space_coords, px in pairs:
         cam.addLandmarkInformation(np.array(px), space_coords, [3, 3, 10])
