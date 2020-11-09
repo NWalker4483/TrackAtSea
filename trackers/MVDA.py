@@ -158,7 +158,7 @@ if __name__ == "__main__":
     import numpy as np
     import cv2
 
-    cap = cv2.VideoCapture('raw_data/video/6.mp4')
+    cap = cv2.VideoCapture('raw_data/video/15.mp4')
 
 
     def crop_bottom_half(image):
