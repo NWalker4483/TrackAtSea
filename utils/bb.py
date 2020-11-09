@@ -1,19 +1,20 @@
+
+"""
 # ! And I believe that the below assumption is incorrect from testing
+def merge_boxes(boxes):  # ? The paper was not clear whether or not partially overlapping or entirely overlapping boxes should be removed as of now only fully overlapping boxes will be
+    contained = set()
+    final = set()
+    for container in boxes:
+        if container not in contained:
+            for box in boxes:
 
-# def merge_boxes(boxes):  # ? The paper was not clear whether or not partially overlapping or entirely overlapping boxes should be removed as of now only fully overlapping boxes will be
-#     contained = set()
-#     final = set()
-#     for container in boxes:
-#         if container not in contained:
-#             for box in boxes:
-
-#                 if (container[0] <= box[0]) and (container[1] <= box[1]):  # Higher
-#                     # Longer and Taller
-#                     if (container[0] + container[2] >= box[0] + box[2]) and (container[1] + container[3] >= box[1] + box[3]):
-#                         if box != container:
-#                             contained.add(box)
-#     return set([box for box in boxes if box not in contained])
-
+                if (container[0] <= box[0]) and (container[1] <= box[1]):  # Higher
+                    # Longer and Taller
+                    if (container[0] + container[2] >= box[0] + box[2]) and (container[1] + container[3] >= box[1] + box[3]):
+                        if box != container:
+                            contained.add(box)
+    return set([box for box in boxes if box not in contained])
+"""
 def merge_boxes(boxes):
     seen = set()
     new_boxes = set()

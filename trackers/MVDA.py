@@ -46,7 +46,7 @@ class MVDATracker():
         return self.detections
 
     def getLandmarkVessel(self):
-        return self.TB[min(self.TB)[1][-1]]
+        return self.TB[min(self.TB)[1][-1]] # Return the oldest detection 
 
     def update(self, frame):  # MVDA Run Every Second
         self.frames_read += 1
@@ -135,7 +135,7 @@ class MVDATracker():
             self.last_states.append(self.TB[ID][0][-1])
             self.detections
 
-    def contiansWater(self, clip):  # Water Detection Algortihm
+    def contiansWater(self, clip):  # Water Detection Algortihm Kinda iffy tbh
         clip = cv2.bilateralFilter(clip, 9, 75, 75)
         clip = cv2.blur(clip, (self.blur_size, self.blur_size))
         edges = cv2.Canny(clip, 100, 200)  # TODO: Change to Parameters

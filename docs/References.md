@@ -26,3 +26,6 @@ Georgiev, Mihail. (2019). Re: What is best way to  calibration camera from singl
 
 Homography Decomposition 
 https://dsp.stackexchange.com/questions/2736/step-by-step-camera-pose-estimation-for-visual-tracking-and-planar-markers
+
+Hungarian + Kalman 
+https://towardsdatascience.com/computer-vision-for-tracking-8220759eee85

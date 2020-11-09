@@ -8,7 +8,7 @@ import imageai
 from trackers.MVDA import MVDATracker
 # Aided moving vehicle detection algorithm
 class AMVDATracker():
-    def __init__(self,  scaling_factor=3, init_frames=250,blur_size=21, framerate=30,
+    def __init__(self,  scaling=3, init_frames=250,blur_size=21, framerate=30,
                  learning_rate=3, detecting_rate=1,
                  ignored_regions=None, min_object_width=20,
                  min_object_height=20, max_HW_ratio=6,
@@ -23,7 +23,7 @@ class AMVDATracker():
             
         self.frames_per_round = 0 
         self.frames_in_round = []
-        self.scaling_factor = scaling_factor
+        self.scaling = scaling
         self.last_states = []
         self.detections = []
         
