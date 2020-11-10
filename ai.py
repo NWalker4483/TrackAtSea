@@ -1,5 +1,5 @@
+# Trained on Google colab
 from imageai.Detection.Custom import CustomObjectDetection
-
 
 import os
 import cv2

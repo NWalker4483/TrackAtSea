@@ -8,3 +8,4 @@ venv
 .DS_Store
 .ipynb_checkpoints/
 board.jpg
+test_outputs/

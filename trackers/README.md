@@ -1,3 +1,4 @@
+Each call of the update function should return a list of detection's with the associated frame detection id and bounding box 
 class Detector():
     def __init__(self):
         self.detections = [] # [(frame, id, box)]

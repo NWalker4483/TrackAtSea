@@ -75,6 +75,7 @@ class ORBTracker:
         return detections 
 if __name__ == "__main__":
     import random
+    import csv
 
     cache = {}
     def id_to_random_color(number):
@@ -84,8 +85,8 @@ if __name__ == "__main__":
             return r, g, b
         else:
             return cache[number]
-
-    cap = cv2.VideoCapture('raw_data/video/6.mp4')
+    video_num = 6
+    cap = cv2.VideoCapture(f'raw_data/video/{video_num}.mp4')
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     smp = cap.read()[1]
@@ -95,7 +96,11 @@ if __name__ == "__main__":
     tracker = ORBTracker(Land)
 
     try:
-        while(1):
+        out_file = open(f"generated_data/tracks/orb.{video_num}.csv","w+")
+        fields = ['Frame No.', 'Vessel ID','X1','Y1','X2','Y2'] 
+        csvwriter = csv.writer(out_file)  
+        csvwriter.writerow(fields)  
+        while True:
             ret, img = cap.read()
             if not ret: exit()
             img2 = img.copy()
@@ -103,9 +108,12 @@ if __name__ == "__main__":
             cv2.line(img2, (0, Land), (img2.shape[1], Land), (0, 0, 255), 2) # Ignore the land
             
             for detect in tracker.update(img):
-                _, ID, box = detect    
+                frame, ID, box = detect    
+                x1, y1, x2, y2 = box
                 color = id_to_random_color(ID)
-                cv2.rectangle(img2, (box[0], box[1]), (box[2], box[3]), color, 2)
+                cv2.rectangle(img2, (x1, y1), (x2, y2), color, 2)
+                csvwriter.writerow(
+                    [frame, ID, x1, y1, x2, y2])
             for ID in tracker.prev_clusters:
                 color = id_to_random_color(ID)
                 for point in tracker.prev_clusters[ID]:
@@ -115,5 +123,6 @@ if __name__ == "__main__":
             out.write(img2)
             cv2.waitKey(1)
     finally:
+        out_file.close()
         out.release()
         pass

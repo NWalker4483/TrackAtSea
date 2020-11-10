@@ -52,6 +52,17 @@ try:
         k = cv2.waitKey(1) & 0xff
         if k == 27: break
 finally:
+    out_file = open(f"generated_data/outputs/manual.detections.csv","w+")
+    fields = ['Frame No.', 'Vessel ID','Latitude', 'Longitude','X','Y','W','H']  
+    csvwriter = csv.writer(out_file)  
+    csvwriter.writerow(fields)  
+    for frame, gps, rect in pairs:
+        Vessel_ID = 0
+        x, y, w, h = rect
+        lat, lon = gps
+        csvwriter.writerow(
+            [frame, Vessel_ID, lat, lon, x, y, w, h])
+    out_file.close()
     cap.release()
     out.release()
     cv2.destroyAllWindows()
