@@ -176,6 +176,7 @@ if __name__ == "__main__":
     try:
         while(1):
             ret, frame = cap.read()
+            print(frame.shape)
             frame = crop_bottom_half(frame)
             rects = fgbg.update(frame)
             mask = fgbg.background_mask
