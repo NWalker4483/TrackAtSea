@@ -23,10 +23,12 @@ class ORBTracker:
         self.frames_read = 0
         
     def getAllDetections(self):
-        pass
+        return None
     def getLandmarkVessel(self):
-        pass
+        return None
     def update(self, frame):
+        kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+        frame = cv2.filter2D(frame, -1, kernel)
         # find the keypoints with ORB
         kp = self.orb.detect(frame, None)
 
@@ -97,12 +99,17 @@ if __name__ == "__main__":
             ret, img = cap.read()
             if not ret: exit()
             img2 = img.copy()
+            
             cv2.line(img2, (0, Land), (img2.shape[1], Land), (0, 0, 255), 2) # Ignore the land
             
             for detect in tracker.update(img):
                 _, ID, box = detect    
                 color = id_to_random_color(ID)
                 cv2.rectangle(img2, (box[0], box[1]), (box[2], box[3]), color, 2)
+            for ID in tracker.prev_clusters:
+                color = id_to_random_color(ID)
+                for point in tracker.prev_clusters[ID]:
+                    cv2.circle(img2, tuple([int(i) for i in point]), 1, color, 2)
             # draw only keypoints location,not size and orientation
             cv2.imshow(" ",img2)
             out.write(img2)

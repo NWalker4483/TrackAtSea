@@ -29,3 +29,6 @@ https://dsp.stackexchange.com/questions/2736/step-by-step-camera-pose-estimation
 
 Hungarian + Kalman
 https://towardsdatascience.com/computer-vision-for-tracking-8220759eee85
+
+HRD
+http://www.vision.cs.rpi.edu/gdbicp/HRD.html

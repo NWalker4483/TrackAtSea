@@ -108,7 +108,9 @@ class MVDATracker():
                 best_scoring_ID = max(
                     overlap_scores, key=lambda x: overlap_scores[x])
                 closest_box_ID = min(dist_scores, key=lambda x: dist_scores[x])
-
+                box = list(box)
+                box[2], box[3] = box[0] + box[2], box[1] + box[3]
+                box = tuple(box)
                 if overlap_scores[best_scoring_ID] > 0:
                     self.TB[best_scoring_ID][1].append((self.frames_read, best_scoring_ID, box))
                     continue
@@ -118,11 +120,6 @@ class MVDATracker():
                 new_id = self.ID # 0 if len(self.TB) == 0 else max(self.TB) + 1
                 self.ID += 1
                 self.TB[new_id] = [[(self.frames_read, new_id, box)], [(self.frames_read, new_id, box)]]
-        out = set()
-        for i in self.TB:
-            for j in range(len(self.TB[i][1])):
-                out.add(self.TB[i][1][j])
-        return out
 
     def StatusUpdateAlgorithm(self):  # Is called every 5 Seconds
         copy = self.TB.copy()
@@ -170,37 +167,41 @@ if __name__ == "__main__":
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     smp = crop_bottom_half(cap.read()[1])
     out = cv2.VideoWriter('output.mvda.mp4', fourcc, 15,
-                        (smp.shape[1],  smp.shape[0]*3))
+                        (smp.shape[1],  smp.shape[0]*2))
     fgbg = MVDATracker(init_frames=50, detecting_rate=3, detections_per_denoising=5,
                     framerate=20, max_recovery_distance=50, max_HW_ratio=4)
     try:
         while(1):
             ret, frame = cap.read()
-            print(frame.shape)
             frame = crop_bottom_half(frame)
             rects = fgbg.update(frame)
             mask = fgbg.background_mask
             res = cv2.bitwise_and(frame, frame, mask=mask)
-            for rect in rects:
+            out_ = set()
+            # Show the detections for this round
+            for i in fgbg.TB:
+                for j in range(len(fgbg.TB[i][1])):
+                    out_.add(fgbg.TB[i][1][j])
+            for rect in out_:
                 _, ID, rect = rect
-                x, y, w, h = rect
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 1)
-                # cv2.putText(frame,f' {ID} ',(x+w+10,y+h),0,0.3,(0,255,255))
+                x, y, x2, y2 = rect
+                cv2.rectangle(frame, (x, y), (x2, y2), (0, 255, 255), 1)
+
             for rect in fgbg.last_states:
                 _, ID, rect = rect
                 x, y, x2, y2 = rect
                 cv2.rectangle(frame, (x, y), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(frame, f'Boat {ID} Detected ',
-                            (x+w+10, y+h), 0, 0.3, (0, 255, 0))
+                #cv2.putText(frame, f'Boat {ID} Detected ', (x+w+10, y+h), 0, 0.3, (0, 255, 0))
 
             view = cv2.vconcat(
-                [frame, res, cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)])
+                [frame, res])
             out.write(view)
             cv2.imshow('frame', view)
             k = cv2.waitKey(1) & 0xff
             if k == 27:
                 break
     finally:
+        
         cap.release()
         out.release()
         cv2.destroyAllWindows()
