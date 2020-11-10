@@ -1,9 +1,14 @@
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
 from sort.sort import Sort
 import numpy as np
 import cv2
 from trackers.ORB import ORBTracker
 import random
-
+import csv 
 #create instance of SORT
 mot_tracker = Sort()
 orb_tracker = ORBTracker() 
@@ -25,6 +30,11 @@ def id_to_random_color(number):
     else:
         return cache[number]
 try:
+    out_file = open(f"generated_data/tracks/sort.orb.{6}.csv","w+")
+    fields = ['Frame No.', 'Vessel ID','X1','Y1','X2','Y2']  
+    csvwriter = csv.writer(out_file)  
+    csvwriter.writerow(fields)  
+    a = 0 
     while True:
         ret, frame = cap.read()
         if not ret: break
@@ -47,21 +57,13 @@ try:
         for detection in track_bbs_ids:
             x, y, x2, y2, ID = [int(i) for i in detection]
             cv2.rectangle(frame, (x, y), (x2, y2), id_to_random_color(ID), 2)
+            csvwriter.writerow([a, ID, x, y, x2, y2])
         out.write(frame)
         cv2.imshow('frame', frame)
+        a+=1
         k = cv2.waitKey(1) & 0xff
         if k == 27: break
 finally:
-    out_file = open(f"generated_data/outputs/manual.detections.csv","w+")
-    fields = ['Frame No.', 'Vessel ID','Latitude', 'Longitude','X','Y','W','H']  
-    csvwriter = csv.writer(out_file)  
-    csvwriter.writerow(fields)  
-    for frame, gps, rect in pairs:
-        Vessel_ID = 0
-        x, y, w, h = rect
-        lat, lon = gps
-        csvwriter.writerow(
-            [frame, Vessel_ID, lat, lon, x, y, w, h])
     out_file.close()
     cap.release()
     out.release()

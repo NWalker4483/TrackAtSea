@@ -47,8 +47,6 @@ for frame in pred_frames:
     MSE += ERR[-1] ** 2 
 
 print(f"""\
-
-Nan Estimates: {failed}
 Average Error (m): {sum(ERR)/len(pred_frames)}
 Standard Dev (+/- m): {np.std(ERR)}
 Mean Squared Error: {MSE/len(pred_frames)}

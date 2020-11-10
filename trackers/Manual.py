@@ -13,6 +13,7 @@ class ManualTracker():
         self.pos2 = [400, 400]  # x, y
         self.last_frame = None
         cv2.namedWindow("Tracker Frame")
+        self.frames_read = 0 
 
     def getLandmarkVessel(self):
         key = None
@@ -21,14 +22,14 @@ class ManualTracker():
             cv2.rectangle(temp, (self.pos[0], self.pos[1]), (self.pos2[0], self.pos2[1]), (255, 0, 0), 2)
             key = cv2.waitKey(1) & 0xFF
             cv2.imshow("Tracker Frame",temp)
-            if key == ord('w'):
-                self.pos[1] += -5
-            if key == ord('s'):
-                self.pos[1] += 5
-            if key == ord('a'):
-                self.pos[0] += -5
-            if key == ord('d'):
-                self.pos[0] += 5
+            # if key == ord('w'):
+            #     self.pos[1] += -5
+            # if key == ord('s'):
+            #     self.pos[1] += 5
+            # if key == ord('a'):
+            #     self.pos[0] += -5
+            # if key == ord('d'):
+            #     self.pos[0] += 5
         x = min(self.pos[0],self.pos2[0]) 
         y = min(self.pos[1],self.pos2[1]) 
         w = max(self.pos[0],self.pos2[0]) - x
@@ -37,7 +38,11 @@ class ManualTracker():
     
     def update(self,frame):
         self.last_frame = frame 
-        
+        self.frames_read += 1
+        if self.frames_read % (self.frame_count // self.num_detections) == 0:
+            rect = tracker.getLandmarkVessel()
+            pairs.append((frames_read, lm_points_gps[frames_read],rect))
+        return []
         # key = cv2.waitKey(1) & 0xFF
         # cv2.imshow("Tracker Frame", self.last_frame)
         

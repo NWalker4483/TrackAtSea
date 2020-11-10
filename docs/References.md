@@ -32,3 +32,8 @@ https://towardsdatascience.com/computer-vision-for-tracking-8220759eee85
 
 HRD
 http://www.vision.cs.rpi.edu/gdbicp/HRD.html
+
+RANSAC
+https://cs.stackexchange.com/questions/70434/how-is-ransac-used-to-estimate-a-homography-given-the-descriptors-of-both-images
+
+https://stackoverflow.com/questions/60264322/which-inliers-is-the-ransac-algorithm-using-in-cv2-findhomography-to-find-the-ho

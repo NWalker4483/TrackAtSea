@@ -3,7 +3,9 @@ from imageai.Detection.Custom import CustomObjectDetection
 
 import os
 import cv2
-
+class DEEPTracker():
+    def __init__(self):
+        pass
 execution_path = os.getcwd()
 
 detector = CustomObjectDetection()

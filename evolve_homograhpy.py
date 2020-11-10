@@ -16,24 +16,23 @@ def distance(p1, p2):
 k = 5
 center = 1280 // 2, 720 // 2
 # f_x, f_y, k1, k2, k3, p1, p2 
-varbound = np.array([[0, 1500],[0, 1500],[center[0]-200, center[0]+200],[center[1]-200, center[1]+200],[-k, k],[-k, k],[-k, k],[-k, k],[-k, k]])
+varbound = np.array([[0, 1500],[0, 1500],[center[0]-20, center[0]+20],[center[1]-20, center[1]+20],[-k, k],[-k, k],[-k, k],[-k, k]])
 best_h = None 
 best_err = np.inf
 def reprojection_error(X):
     global best_err, best_h
     # Camera Matrix and Distortion Coefficients
     # px, py, f, sx, sy, pan, tilt, swing, tx, ty, tz
-    f_x, f_y, c_x, c_y, k1, k2, k3, p1, p2 = X
+    f_x, f_y, c_x, c_y, k1, k2, p1, p2 = X
     mtx = np.array([[f_x, 0, c_x],
                     [0, f_y, c_y],
-                    [0,   0,   1]])
-    dist = np.array([[k1, k2, p1, p2, k3]])
+                    [0,   0,   1]], dtype=np.float64)
+    dist = np.array([[k1, k2, p1, p2]], dtype=np.float64)
     # Undistort detection points # https://stackoverflow.com/questions/22027419/bad-results-when-undistorting-points-using-opencv-in-python
     undistorted_points = cv2.undistortPoints(
         distorted_points.reshape(-1, 1, 2), mtx, dist, P=mtx)
     # Compute Homography
-    sources = np.random.randint(0,len(distorted_points),4)
-    h, status = cv2.findHomography(undistorted_points[sources], gps_points[sources])
+    h, status = cv2.findHomography(undistorted_points, gps_points, cv2.RANSAC)
     if type(h) != type(None):
         # Compute New Projections # https://stackoverflow.com/questions/55055655/how-to-use-cv2-perspectivetransform-to-apply-homography-on-a-set-of-points-in
         gps_projections = cv2.perspectiveTransform(undistorted_points, h)
@@ -53,17 +52,17 @@ def reprojection_error(X):
         return 99999999999999
 
 
-algorithm_param = {'max_num_iteration': 1500,\
+algorithm_param = {'max_num_iteration': 5 * 3000,\
                    'population_size':100,\
                    'mutation_probability':0.2,\
                    'elit_ratio': 0.05,\
                    'crossover_probability': 0.5,\
                    'parents_portion': 0.3,\
-                   'crossover_type':'one_point',\
-                   'max_iteration_without_improv':None}
+                   'crossover_type':'uniform',\
+                   'max_iteration_without_improv': 3000}
 
 model=ga(function=reprojection_error,\
-            dimension=9,\
+            dimension=8,\
             variable_type='real',\
             variable_boundaries=varbound,\
             algorithm_parameters=algorithm_param)
@@ -72,12 +71,11 @@ results = []
 outputs = []
 reports = []
 runs = 5
-for _ in range(runs):
-    with patch('matplotlib.pyplot.show') as p: # Prevent Plot from blocking
-        model.run()
-        results.append(model.output_dict["variable"])
-        reports.append(model.report)
-        outputs.append(model.output_dict)
+with patch('matplotlib.pyplot.show') as p: # Prevent Plot from blocking
+    model.run()
+    results.append(model.output_dict["variable"])
+    reports.append(model.report)
+    outputs.append(model.output_dict)
 results = np.array(results)
 
 import matplotlib.pyplot as plt
@@ -85,12 +83,12 @@ plt.clf() # Clear Stuff from the runs
 
 best = min(outputs, key = lambda x: x["function"])
 # Camera Matrix and Distortion Coefficients
-f_x, f_y, c_x, c_y, k1, k2, k3, p1, p2 = best["variable"]
+f_x, f_y, c_x, c_y, k1, k2, p1, p2 = best["variable"]
 mtx = np.array([[f_x, 0, c_x],
                 [0, f_y, c_y],
                 [0,   0,   1]])
-dist = np.array([[k1, k2, p1, p2, k3]])
-print(f"Camera Matrix:\n{mtx}\nDistortion Coefficients:\n{dist}\n Best Homography:\n{best_h}")
+dist = np.array([[k1, k2, p1, p2]])
+print(f"Camera Matrix:\n\t{mtx}\nDistortion Coefficients:\n\t{dist}\n Best Homography:\n\t{best_h}\n")
 undistorted_points = cv2.undistortPoints(
         distorted_points.reshape(-1, 1, 2), mtx, dist, P=mtx)
 gps_projections = cv2.perspectiveTransform(undistorted_points, best_h)
@@ -105,14 +103,25 @@ Average Error (m): {sum(ERR)/len(distorted_points)}
 Error Standard Dev (+/- m): {np.std(ERR)}
 """)
 
+img = cv2.imread('board.jpg')
+img_size = (img.shape[1],img.shape[0])
+dst = cv2.undistort(img, mtx, dist, None, mtx)
+
+# Filename 
+filename = 'savedImage.jpg'
+  
+# Using cv2.imwrite() method 
+# Saving the image 
+cv2.imwrite(filename, dst)
+ 
 from scipy.stats.kde import gaussian_kde
 from numpy import linspace
 
 # these are the values over wich your kernel will be evaluated
-dist_space = linspace( 0, 15, 100 )
+dist_space = linspace( 0, 800, 10000 )
 # plot the results
 try:
-    for i in range(9):
+    for i in range(8):
         data = results[:,i]
         # this create the kernel, given an array it will estimate the probability over that values
         kde = gaussian_kde(data)

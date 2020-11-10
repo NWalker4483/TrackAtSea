@@ -1,7 +1,6 @@
 
-"""
 # ! And I believe that the below assumption is incorrect from testing
-def merge_boxes(boxes):  # ? The paper was not clear whether or not partially overlapping or entirely overlapping boxes should be removed as of now only fully overlapping boxes will be
+def remove_contained(boxes):  # ? The paper was not clear whether or not partially overlapping or entirely overlapping boxes should be removed as of now only fully overlapping boxes will be
     contained = set()
     final = set()
     for container in boxes:
@@ -14,7 +13,7 @@ def merge_boxes(boxes):  # ? The paper was not clear whether or not partially ov
                         if box != container:
                             contained.add(box)
     return set([box for box in boxes if box not in contained])
-"""
+
 def merge_boxes(boxes):
     seen = set()
     new_boxes = set()
