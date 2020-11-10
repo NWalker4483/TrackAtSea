@@ -187,8 +187,8 @@ if __name__ == "__main__":
                 # cv2.putText(frame,f' {ID} ',(x+w+10,y+h),0,0.3,(0,255,255))
             for rect in fgbg.last_states:
                 _, ID, rect = rect
-                x, y, w, h = rect
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                x, y, x2, y2 = rect
+                cv2.rectangle(frame, (x, y), (x2, y2), (0, 255, 0), 2)
                 cv2.putText(frame, f'Boat {ID} Detected ',
                             (x+w+10, y+h), 0, 0.3, (0, 255, 0))
 

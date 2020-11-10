@@ -37,6 +37,7 @@ class ManualTracker():
     
     def update(self,frame):
         self.last_frame = frame 
+        
         # key = cv2.waitKey(1) & 0xFF
         # cv2.imshow("Tracker Frame", self.last_frame)
         
