@@ -41,6 +41,7 @@ try:
         writers[_file] = csvwriter
     # * Could I optimize this... definitely. Is it worth the mental effort probably not
     for video in frame_times:
+        last_best = None
         for frame in frame_times[video]:
             best_reading = None
             best_score = 999999999
@@ -49,7 +50,9 @@ try:
                 if (score < best_score):
                     best_reading = reading 
                     best_score = score
-            writers[video].writerow([frame, frame_times[video][frame], best_reading[0], best_reading[1], best_reading[2]])
+            if last_best != best_reading:
+                writers[video].writerow([frame, frame_times[video][frame], best_reading[0], best_reading[1], best_reading[2]])
+                last_best = best_reading 
 finally:  
     for _file in files:
         files[_file].close()
