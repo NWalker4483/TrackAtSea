@@ -44,6 +44,7 @@ try:
         best_frame = -1
         best_video = -1
         best_score = 999999999
+        
         for video in frame_times:
             for frame in frame_times[video]:
                 score = abs(frame_times[video][frame] - reading[0])
