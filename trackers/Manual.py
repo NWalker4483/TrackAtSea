@@ -8,9 +8,11 @@ def drawCrossHairs(pos, img):
 
 
 class ManualTracker():
-    def __init__(self):
+    def __init__(self, frame_count, num_detections):
         self.pos = [400, 400]  # x, y
         self.pos2 = [400, 400]  # x, y
+        self.frame_count = frame_count
+        self.num_detections = num_detections
         self.last_frame = None
         cv2.namedWindow("Tracker Frame")
         self.frames_read = 0 
@@ -22,14 +24,8 @@ class ManualTracker():
             cv2.rectangle(temp, (self.pos[0], self.pos[1]), (self.pos2[0], self.pos2[1]), (255, 0, 0), 2)
             key = cv2.waitKey(1) & 0xFF
             cv2.imshow("Tracker Frame",temp)
-            # if key == ord('w'):
-            #     self.pos[1] += -5
-            # if key == ord('s'):
-            #     self.pos[1] += 5
-            # if key == ord('a'):
-            #     self.pos[0] += -5
-            # if key == ord('d'):
-            #     self.pos[0] += 5
+            if key == ord('d'):
+                return None
         x = min(self.pos[0],self.pos2[0]) 
         y = min(self.pos[1],self.pos2[1]) 
         w = max(self.pos[0],self.pos2[0]) - x
@@ -38,10 +34,11 @@ class ManualTracker():
     
     def update(self,frame):
         self.last_frame = frame 
-        self.frames_read += 1
         if self.frames_read % (self.frame_count // self.num_detections) == 0:
-            rect = tracker.getLandmarkVessel()
-            pairs.append((frames_read, lm_points_gps[frames_read],rect))
+            loc = tracker.getLandmarkVessel()
+            if loc != None: 
+                return [loc]
+        self.frames_read += 1
         return []
         # key = cv2.waitKey(1) & 0xFF
         # cv2.imshow("Tracker Frame", self.last_frame)
@@ -56,25 +53,19 @@ if __name__ == "__main__":
 
     parser.add_argument('--video_file', type=str, default="raw_data/video/6.mp4",
                         help='Video file name (MP4 format)')
-    parser.add_argument('--gps_list_file', type=str, default="generated_data/frame2gps/frame2gps.6.list",
-                         help='')
-    parser.add_argument('--num_detections', type=int, default=10,
+    
+    parser.add_argument('--num_detections', type=int, default=20,
                         help='')
 
     args = parser.parse_args()
 
     if args.video_num != None:
         args.video_file = f"raw_data/video/{args.video_num}.mp4"
-        args.gps_list_file = f"generated_data/frame2gps/frame2gps.{args.video_num}.list"
-    
+
     video = cv2.VideoCapture(args.video_file)
     frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     frames_read = 0 
 
-    with open(args.gps_list_file, "rb") as fp:   # Unpickling
-        lm_points_gps = pickle.load(fp)
-
-    # assert(len(lm_points_space) == frame_count)
     def drag(event, x, y, flags, param): 
         global dragging, tracker    
         if dragging:
@@ -85,33 +76,24 @@ if __name__ == "__main__":
         # check to see if the left mouse button was released
         elif event == cv2.EVENT_LBUTTONUP:
             dragging = False
+
     cv2.namedWindow("Tracker Frame")
     cv2.setMouseCallback("Tracker Frame", drag)
-    tracker = ManualTracker()
+    tracker = ManualTracker(frame_count, args.num_detections)
     dragging = False
-
-    lm_points_px = [] # Boat Posisition in each frame
-    pairs = []
-    try:      
+    try:
+        out_file = open(f"generated_data/tracks/manual.{args.video_num}.csv","w+")
+        fields = ['Frame No.', 'Vessel ID','X1','Y1','X2','Y2']  
+        csvwriter = csv.writer(out_file)  
+        csvwriter.writerow(fields) 
         while video.isOpened():
             ret, frame = video.read()
             if not ret: break
-            
-            tracker.update(frame)
-            if frames_read % (frame_count // args.num_detections) == 0:
-                rect = tracker.getLandmarkVessel()
-                pairs.append((frames_read, lm_points_gps[frames_read],rect))
-            frames_read += 1
-        print(*pairs, sep= "\n")
-    finally:
-        out_file = open(f"generated_data/outputs/manual.detections.csv","w+")
-        fields = ['Frame No.', 'Vessel ID','Latitude', 'Longitude','X','Y','W','H']  
-        csvwriter = csv.writer(out_file)  
-        csvwriter.writerow(fields)  
-        for frame, gps, rect in pairs:
-            Vessel_ID = 0
-            x, y, w, h = rect
-            lat, lon = gps
-            csvwriter.writerow(
-                [frame, Vessel_ID, lat, lon, x, y, w, h])
+            detection = tracker.update(frame)
+            if len(detection) != 0: 
+                f_id, ID, box = detection[0]
+                x1, y1, x2, y2 = box
+                csvwriter.writerow(
+                    [frame, Vessel_ID, x1, y1, x2, y2])
+    finally: 
         out_file.close()

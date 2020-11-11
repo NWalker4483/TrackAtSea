@@ -19,9 +19,12 @@ root = tree.getroot()
 readings = list()
 for entry in root.iter("trkpt"):
     readings.append((entry.find("time").text.split("T")[1][:-1],\
-                  entry.attrib["lat"], entry.attrib["lon"])) # (Time in seconds, latitude, longitude)
+                  float(entry.attrib["lat"]), float(entry.attrib["lon"]))) # (Time in seconds, latitude, longitude)
 
 frame_times = dict()
+def dist(p1,p2):
+    return (((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2)) ** .5
+    
 for i in range(6, 23):
     frame_times[i] = dict()
     with open(f"raw_data/camera_gps_logs/SOURCE_GPS_LOG_{i}_cleaned.csv","r") as f:
@@ -39,9 +42,11 @@ try:
         csvwriter = csv.writer(files[_file])  
         csvwriter.writerow(fields)  
         writers[_file] = csvwriter
+    results = dict()
     # * Could I optimize this... definitely. Is it worth the mental effort probably not
     for video in frame_times:
         last_best = None
+        results[video] = []
         for frame in frame_times[video]:
             best_reading = None
             best_score = 999999999
@@ -50,9 +55,20 @@ try:
                 if (score < best_score) and (score <= 5):
                     best_reading = reading 
                     best_score = score
-            if last_best != best_reading:
-                writers[video].writerow([frame, frame_times[video][frame], best_reading[0], best_reading[1], best_reading[2]])
+            if last_best != best_reading and best_reading != None:
+                # Store to Filter Later 
+                results[video].append([frame, frame_times[video][frame], best_reading[0], best_reading[1], best_reading[2]])
                 last_best = best_reading 
+    # Filter # ? I havent evalutated the helpulness of this fully 
+    for res in results:
+        writers[res].writerow(results[res][0])
+        for i in range(1, len(results[res]) - 1):
+            prev_pnt = [results[res][i-1][3],results[res][i-1][4]]
+            this_pnt = [results[res][i][3],    results[res][i][4]]
+            next_pnt = [results[res][i+1][3],results[res][i+1][4]]
+            if dist(prev_pnt, next_pnt) >= dist(prev_pnt, this_pnt):
+                writers[res].writerow(results[res][i])
+        writers[res].writerow(results[res][-1])
 finally:  
     for _file in files:
         files[_file].close()

@@ -4,7 +4,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 import cv2
-import utils.bb as bb
+import utils.common as bb
 # A Python based implementation of the algorithm described on https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6928767/ s
 
 class MVDATracker():
@@ -61,11 +61,6 @@ class MVDATracker():
         if (self.frames_read % (self.framerate // self.learning_rate) == 0):
             self.background_mask = self.backSub.apply(prepped_frame)
 
-        # Call the SUA Fucntion   5 * (30//10)
-        if (self.detections_since_denoising == self.detections_per_denoising):
-            self.detections_since_denoising = 0
-            self.StatusUpdateAlgorithm()
-
         if (self.frames_read % (self.framerate//self.detecting_rate) == 0):
             self.detections_since_denoising += 1
             boxes = set()  # [(x,y,width,height),]
@@ -120,6 +115,13 @@ class MVDATracker():
                 new_id = self.ID # 0 if len(self.TB) == 0 else max(self.TB) + 1
                 self.ID += 1
                 self.TB[new_id] = [[(self.frames_read, new_id, box)], [(self.frames_read, new_id, box)]]
+        
+        # Call the SUA Fucntion   5 * (30//10)
+        if (self.detections_since_denoising == self.detections_per_denoising):
+            self.detections_since_denoising = 0
+            self.StatusUpdateAlgorithm()
+            return self.last_states
+        return [] 
 
     def StatusUpdateAlgorithm(self):  # Is called every 5 Seconds
         copy = self.TB.copy()
@@ -130,7 +132,6 @@ class MVDATracker():
                 continue
             self.TB[ID][0], self.TB[ID][1] = self.TB[ID][1], []
             self.last_states.append(self.TB[ID][0][-1])
-            self.detections
 
     def contiansWater(self, clip):  # Water Detection Algortihm Kinda iffy tbh
         clip = cv2.bilateralFilter(clip, 9, 75, 75)
