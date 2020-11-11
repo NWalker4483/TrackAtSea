@@ -97,18 +97,34 @@ def crop_to(img, box):
 
 import cv2
 import numpy as np 
-def plot_gps(data, height = 500, base_img=None): # [[Lat, Long],[Lat, Long], ...]
+def plot_gps(data, height = 5000, base_img=None): # [[Lat, Long],[Lat, Long], ...]
     data = np.array(data)
     # Normalize
-    change_per_px = height / (max(data[:,0]) - min(data[:,0])) # Find the largest change in gps 
+    min_lat = np.inf
+    max_lat = -np.inf
+    min_lon = np.inf
+    max_lon = -np.inf
+    for path in data: 
+        for lat, lon in path:
+            min_lat = lat if lat < min_lat else min_lat
+            max_lat = lat if lat > max_lat else max_lat
+            min_lon = lon if lon < min_lon else min_lon
+            max_lon = lon if lon > max_lon else max_lon
+    print(min_lat,max_lat,min_lon,max_lon)
+            
+    change_per_px = height / (max_lat - min_lat) # Find the largest change in gps 
     if base_img == None:
-        base_img = np.ones((height,int(change_per_px * (max(data[:,1]) - min(data[:,1]))),3))
-    data[:,0] -= min(data[:,0])
-    data[:,1] -= min(data[:,1])
-    last_point = (int(data[0][0] * change_per_px), int(data[0][1] * change_per_px))
-    for d_lat, d_lon in data[1:]:
-        point = (int(d_lat * change_per_px), int(d_lon * change_per_px))
-        base_img = cv2.line(base_img, last_point, point, (255,0,0), 5) 
-        last_point = point
-  
-    plt.imshow(base_img)
+        base_img = np.ones((height,int(change_per_px * (max_lon - min_lon)),3))
+    for path in data:
+        color = tuple([np.random.randint(0,255) for _ in range(3)])
+        #color = (255,23,0)
+        path[:,0] -= min_lat
+        path[:,1] -= min_lon
+        last_point = (int(path[0][0] * change_per_px), int(path[0][1] * change_per_px))
+        for d_lat, d_lon in path[1:]:
+            point = (int(d_lat * change_per_px), int(d_lon * change_per_px))
+            base_img = cv2.circle(base_img, point,5, color, -1) 
+            base_img = cv2.line(base_img, last_point, point, color, 2) 
+            last_point = point
+    cv2.imwrite("gps.png",base_img)
+    return base_img

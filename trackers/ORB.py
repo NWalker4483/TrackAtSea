@@ -77,14 +77,6 @@ if __name__ == "__main__":
     import random
     import csv
 
-    cache = {}
-    def id_to_random_color(number):
-        if not number in cache:
-            r, g, b = random.randint(0,255),random.randint(0,255),random.randint(0,255)
-            cache[number]= (r, g, b)
-            return r, g, b
-        else:
-            return cache[number]
     video_num = 6
     cap = cv2.VideoCapture(f'raw_data/video/{video_num}.mp4')
     # Define the codec and create VideoWriter object

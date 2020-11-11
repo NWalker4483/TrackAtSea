@@ -26,20 +26,21 @@ class ManualTracker():
             cv2.imshow("Tracker Frame",temp)
             if key == ord('d'):
                 return None
-        x = min(self.pos[0],self.pos2[0]) 
-        y = min(self.pos[1],self.pos2[1]) 
-        w = max(self.pos[0],self.pos2[0]) - x
-        h = max(self.pos[1],self.pos2[1]) - y
-        return (x, y, w, h)
+        x1 = min(self.pos[0],self.pos2[0]) 
+        y1 = min(self.pos[1],self.pos2[1]) 
+        x2 = max(self.pos[0],self.pos2[0]) 
+        y2 = max(self.pos[1],self.pos2[1])
+        return (x1, y1, x2, y2)
     
     def update(self,frame):
+        det = [] 
         self.last_frame = frame 
         if self.frames_read % (self.frame_count // self.num_detections) == 0:
             loc = tracker.getLandmarkVessel()
             if loc != None: 
-                return [loc]
+                det = [(self.frames_read,0,loc)]
         self.frames_read += 1
-        return []
+        return det
         # key = cv2.waitKey(1) & 0xFF
         # cv2.imshow("Tracker Frame", self.last_frame)
         
@@ -49,9 +50,9 @@ if __name__ == "__main__":
     import csv 
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--video_num', type=int, default=None)
+    parser.add_argument('--video_num', type=int, required=True)
 
-    parser.add_argument('--video_file', type=str, default="raw_data/video/6.mp4",
+    parser.add_argument('--video_file', type=str, default="raw_data/video/7.mp4",
                         help='Video file name (MP4 format)')
     
     parser.add_argument('--num_detections', type=int, default=20,
@@ -94,6 +95,6 @@ if __name__ == "__main__":
                 f_id, ID, box = detection[0]
                 x1, y1, x2, y2 = box
                 csvwriter.writerow(
-                    [frame, Vessel_ID, x1, y1, x2, y2])
+                    [f_id, ID, x1, y1, x2, y2])
     finally: 
         out_file.close()

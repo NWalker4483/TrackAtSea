@@ -58,7 +58,7 @@ try:
             if last_best != best_reading and best_reading != None:
                 # Store to Filter Later 
                 results[video].append([frame, frame_times[video][frame], best_reading[0], best_reading[1], best_reading[2]])
-                last_best = best_reading 
+
     # Filter # ? I havent evalutated the helpulness of this fully 
     for res in results:
         writers[res].writerow(results[res][0])
