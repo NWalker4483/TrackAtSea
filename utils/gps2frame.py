@@ -30,6 +30,7 @@ for i in range(6, 23):
     for entry in content:  
         frame_id, utc_time, _, _, est_time = entry.split(",")
         frame_times[i][frame_id] = time2secs(utc_time)
+
 try:
     files = dict()
     [files.update({i : open(f"generated_data/gps2frame/gps2frame.{i}.csv", "w")}) for i in frame_times]
@@ -41,17 +42,17 @@ try:
         writers[_file] = csvwriter
     # * Could I optimize this... definitely. Is it worth the mental effort probably not
     for reading in readings:
-        best_frame = -1
+        best_err = 999999999
         best_video = -1
-        best_score = 999999999
+        best_frame = -1  
         
         for video in frame_times:
             for frame in frame_times[video]:
                 score = abs(frame_times[video][frame] - reading[0])
-                if (score < best_score):
+                if (score < best_err):
                     best_video = video 
                     best_frame = frame 
-                    best_score = score
+                    best_err = score
         writers[best_video].writerow([best_frame, reading[1], reading[2]])
 finally:  
     for _file in files:

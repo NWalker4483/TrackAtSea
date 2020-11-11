@@ -47,7 +47,7 @@ try:
             best_score = 999999999
             for reading in readings:
                 score = abs(time2secs(frame_times[video][frame]) - time2secs(reading[0]))
-                if (score < best_score):
+                if (score < best_score) and (score <= 5):
                     best_reading = reading 
                     best_score = score
             if last_best != best_reading:

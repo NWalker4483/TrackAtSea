@@ -37,3 +37,9 @@ RANSAC
 https://cs.stackexchange.com/questions/70434/how-is-ransac-used-to-estimate-a-homography-given-the-descriptors-of-both-images
 
 https://stackoverflow.com/questions/60264322/which-inliers-is-the-ransac-algorithm-using-in-cv2-findhomography-to-find-the-ho
+
+Distortion 
+https://math.stackexchange.com/questions/302093/how-to-calculate-the-lens-distortion-coefficients-with-a-known-displacement-vect
+
+Oclusion
+http://users.ics.forth.gr/~argyros/mypapers/2010_07_journal_cviu_occlusions.pdf
