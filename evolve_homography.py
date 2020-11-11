@@ -102,17 +102,6 @@ print(f"""\
 Average Error (m): {sum(ERR)/len(distorted_points)}
 Error Standard Dev (+/- m): {np.std(ERR)}
 """)
-
-img = cv2.imread('board.jpg')
-img_size = (img.shape[1],img.shape[0])
-dst = cv2.undistort(img, mtx, dist, None, mtx)
-
-# Filename 
-filename = 'savedImage.jpg'
-  
-# Using cv2.imwrite() method 
-# Saving the image 
-cv2.imwrite(filename, dst)
  
 from scipy.stats.kde import gaussian_kde
 from numpy import linspace
