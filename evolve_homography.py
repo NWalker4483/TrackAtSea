@@ -84,16 +84,16 @@ def reprojection_error(X):
             best_camera_params["Intrinsic Matrix"] = mtx
         return AVG
     else:
-        return 99999999999999
+        return 10e10
 # We definitly dont need this many
-algorithm_param = {'max_num_iteration': 10,\
+algorithm_param = {'max_num_iteration': 100,\
                    'population_size':100,\
                    'mutation_probability':0.2,\
                    'elit_ratio': 0.3,\
                    'crossover_probability': 0.5,\
                    'parents_portion': 0.3,\
                    'crossover_type':'uniform',\
-                   'max_iteration_without_improv': 2000}
+                   'max_iteration_without_improv': 200}
 
 model=ga(function=reprojection_error,\
             dimension=8,\
