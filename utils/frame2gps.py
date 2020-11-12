@@ -55,7 +55,7 @@ try:
             best_score = np.inf
             for reading in readings:
                 score = abs(time2secs(frame_times[video][frame]) - time2secs(reading[0]))
-                if (score < best_score) and (score <= 5):
+                if (score < best_score) and (0 < score <=5 ): #Check that the score is better the score is less than five seconds from the frame time and check that the reading occurred before the frame was taken
                     best_reading = reading 
                     best_score = score
             if best_reading != None:

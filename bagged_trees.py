@@ -7,7 +7,7 @@ import numpy as np
 import geopy.distance
 
 fit_videos = [7,16,13,14]
-test_videos = [14,12,10,21]
+test_videos = [7,16,13,14] #[14,12,10,21]
 
 distorted_points, gps_points = load(fit_videos[0])
 for i in range(1,len(fit_videos)):
