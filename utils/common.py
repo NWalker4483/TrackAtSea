@@ -97,8 +97,7 @@ def crop_to(img, box):
 
 import cv2
 import numpy as np 
-def plot_gps(data, height = 5000, base_img=None): # [[Lat, Long],[Lat, Long], ...]
-    data = np.array(data)
+def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],[Lat, Long], ...]
     # Normalize
     min_lat = np.inf
     max_lat = -np.inf
@@ -111,20 +110,26 @@ def plot_gps(data, height = 5000, base_img=None): # [[Lat, Long],[Lat, Long], ..
             min_lon = lon if lon < min_lon else min_lon
             max_lon = lon if lon > max_lon else max_lon
     print(min_lat,max_lat,min_lon,max_lon)
-            
+    
     change_per_px = height / (max_lat - min_lat) # Find the largest change in gps 
     if base_img == None:
-        base_img = np.ones((height,int(change_per_px * (max_lon - min_lon)),3))
+        base_img = np.ones((buffer + int(change_per_px * (max_lon - min_lon)),buffer + height ,3))
+    legend_y = int(50 * (height/1000))
+    i = 1
     for path in data:
+        path = np.array(path)
         color = tuple([np.random.randint(0,255) for _ in range(3)])
+        
+        base_img = cv2.putText(base_img, f'Path {i}', (50, legend_y*i), cv2.FONT_HERSHEY_SIMPLEX ,  
+                           height/1000, color, 7, cv2.LINE_AA) 
+        i+=1
         #color = (255,23,0)
         path[:,0] -= min_lat
         path[:,1] -= min_lon
-        last_point = (int(path[0][0] * change_per_px), int(path[0][1] * change_per_px))
+        last_point = ((buffer//4) + int(path[0][0] * change_per_px), (buffer//4) + int(path[0][1] * change_per_px))
         for d_lat, d_lon in path[1:]:
-            point = (int(d_lat * change_per_px), int(d_lon * change_per_px))
-            base_img = cv2.circle(base_img, point,5, color, -1) 
-            base_img = cv2.line(base_img, last_point, point, color, 2) 
+            point = ((buffer//4) + int(d_lat * change_per_px), (buffer//4) + int(d_lon * change_per_px))
+            base_img = cv2.circle(base_img, point,10, color, -1) 
+            base_img = cv2.line(base_img, last_point, point, color, 4) 
             last_point = point
     cv2.imwrite("gps.png",base_img)
-    return base_img

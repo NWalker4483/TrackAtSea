@@ -7,6 +7,8 @@ Associating GPS readings with a frame of a video
 '''
 import xml.etree.ElementTree as ET
 import csv
+import tqdm
+import numpy as np
 
 def time2secs(time):  # Convert a string representation of a H:M:S into the number of seconds
     Hours, Min, Sec = [int(i) for i in time.split(":")]
@@ -24,7 +26,7 @@ for entry in root.iter("trkpt"):
 frame_times = dict()
 def dist(p1,p2):
     return (((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2)) ** .5
-    
+
 for i in range(6, 23):
     frame_times[i] = dict()
     with open(f"raw_data/camera_gps_logs/SOURCE_GPS_LOG_{i}_cleaned.csv","r") as f:
@@ -35,7 +37,7 @@ for i in range(6, 23):
         frame_times[i][frame_id] = utc_time.strip()
 try:
     files = dict()
-    [files.update({i : open(f"generated_data/frame2gps/frame2gps.{i}.csv", "w+")}) for i in frame_times]
+    [files.update({i : open(f"generated_data/frame2gps/{i}.csv", "w+")}) for i in frame_times]
     writers = dict()
     for _file in files:
         fields = ['Frame No.','Frame Time','GPS Time', 'Latitude', 'Longitude']  
@@ -44,31 +46,54 @@ try:
         writers[_file] = csvwriter
     results = dict()
     # * Could I optimize this... definitely. Is it worth the mental effort probably not
-    for video in frame_times:
+
+    for video in tqdm.tqdm(frame_times):
         last_best = None
         results[video] = []
         for frame in frame_times[video]:
             best_reading = None
-            best_score = 999999999
+            best_score = np.inf
             for reading in readings:
                 score = abs(time2secs(frame_times[video][frame]) - time2secs(reading[0]))
                 if (score < best_score) and (score <= 5):
                     best_reading = reading 
                     best_score = score
-            if last_best != best_reading and best_reading != None:
-                # Store to Filter Later 
+            if best_reading != None:
                 results[video].append([frame, frame_times[video][frame], best_reading[0], best_reading[1], best_reading[2]])
-
-    # Filter # ? I havent evalutated the helpulness of this fully 
-    for res in results:
-        writers[res].writerow(results[res][0])
-        for i in range(1, len(results[res]) - 1):
-            prev_pnt = [results[res][i-1][3],results[res][i-1][4]]
-            this_pnt = [results[res][i][3],    results[res][i][4]]
-            next_pnt = [results[res][i+1][3],results[res][i+1][4]]
-            if dist(prev_pnt, next_pnt) >= dist(prev_pnt, this_pnt):
-                writers[res].writerow(results[res][i])
-        writers[res].writerow(results[res][-1])
+    
+    ##############################################
+    # ? I havent evalutated the helpulness of this fully And some of the assumptions aren't necessarily true
+    valid_results = dict()
+    for video in tqdm.tqdm(results):
+        prev_gps = (np.inf, np.inf)
+        groups = [] #### Group Frames by the assigned gps reading
+        for frame in results[video]:
+            gps = (frame[3], frame[4])
+            if prev_gps == gps:
+                groups[-1].append(frame)
+            else:
+                groups.append([frame])
+            prev_gps = gps
+        
+        while True:
+            perfect = True 
+            temp = []
+            for i in range(1,len(groups)-1):
+                
+                prev_pnt = [groups[i-1][0][3],groups[i-1][0][4]]
+                this_pnt = [groups[i][0][3],    groups[i][0][4]]
+                next_pnt = [groups[i+1][0][3],groups[i+1][0][4]]
+            
+                # Remove Sharp Changes in gps 
+                if dist(prev_pnt, this_pnt) <= dist(prev_pnt, next_pnt):
+                    temp.append(groups[i])
+                else:
+                    perfect = False
+            groups = temp 
+            if perfect: break 
+        for group in groups:
+            for row in group:
+                writers[video].writerow(row)
 finally:  
     for _file in files:
         files[_file].close()

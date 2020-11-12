@@ -38,6 +38,10 @@ if args.tracker_type == "MVDA":
     from MVDA import MVDATracker
     tracker = MVDATracker(init_frames=50, detecting_rate=1,
                           detections_per_denoising=5, framerate=20, max_recovery_distance=50)
+elif args.tracker_type == "ORB":
+    from MVDA import MVDATracker
+    tracker = MVDATracker(init_frames=50, detecting_rate=1,
+                          detections_per_denoising=5, framerate=20, max_recovery_distance=50)
 
 elif args.tracker_type == "DEEP":
     pass
