@@ -97,6 +97,37 @@ def crop_to(img, box):
 
 import cv2
 import numpy as np 
+cache = {}
+def id_to_random_color(number):
+    if not number in cache:
+        r, g, b = np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)
+        cache[number]= (r, g, b)
+        return r, g, b
+    else:
+        return cache[number]
+        
+def load(video_num):
+    det_frames = dict()
+    with open(f"generated_data/tracks/manual.{video_num}.csv","r") as f:
+        content = f.readlines()
+        content = content[1:] # Skip Header
+    for entry in content:
+        Frame_No, ID, X1, Y1, X2, Y2 = [int(i) for i in entry.split(",")]
+        det_frames[int(Frame_No)] = [X1, Y1, X2, Y2]
+
+    gps_points = []
+    distorted_points = []
+    with open(f"generated_data/frame2gps/{video_num}.csv","r") as f:
+        content = f.readlines()
+        content = content[1:] # Skip Header
+    for entry in content:
+        Frame_No, Frame_Time, GPS_Time, Latitude, Longitude = entry.split(",")
+        if int(Frame_No) in det_frames:
+            gps_points.append([float(Latitude), float(Longitude)])
+            distorted_points.append(det_frames[int(Frame_No)])
+    return np.array(distorted_points, dtype=np.float64), np.array(gps_points, dtype=np.float64)
+
+
 def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],[Lat, Long], ...]
     # Normalize
     min_lat = np.inf

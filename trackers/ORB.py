@@ -1,6 +1,12 @@
 import numpy as np
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+import cv2
+import utils.common as bb
 from sklearn.cluster import DBSCAN
-import cv2 
+
 
 def dist(p1,p2):
     return (((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2)) ** .5
@@ -22,8 +28,6 @@ class ORBTracker:
         self.__new_id = 0
         self.frames_read = 0
         
-    def getAllDetections(self):
-        return None
     def getLandmarkVessel(self):
         return None
     def update(self, frame):
@@ -102,12 +106,12 @@ if __name__ == "__main__":
             for detect in tracker.update(img):
                 frame, ID, box = detect    
                 x1, y1, x2, y2 = box
-                color = id_to_random_color(ID)
+                color = bb.id_to_random_color(ID)
                 cv2.rectangle(img2, (x1, y1), (x2, y2), color, 2)
                 csvwriter.writerow(
                     [frame, ID, x1, y1, x2, y2])
             for ID in tracker.prev_clusters:
-                color = id_to_random_color(ID)
+                color = bb.id_to_random_color(ID)
                 for point in tracker.prev_clusters[ID]:
                     cv2.circle(img2, tuple([int(i) for i in point]), 1, color, 2)
             # draw only keypoints location,not size and orientation

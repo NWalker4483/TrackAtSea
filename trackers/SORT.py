@@ -9,12 +9,13 @@ import cv2
 from trackers.ORB import ORBTracker
 import random
 import csv 
+from utils.common import * 
 #create instance of SORT
 mot_tracker = Sort()
 orb_tracker = ORBTracker() 
 
 # get detections
-videonum = 7
+videonum = 14
 cap = cv2.VideoCapture(f'raw_data/video/{videonum}.mp4')
 
 # Define the codec and create VideoWriter object
@@ -22,14 +23,7 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 smp = cap.read()[1]
 out = cv2.VideoWriter('output.sort.mp4', fourcc, 15,
                     (smp.shape[1],  smp.shape[0]))
-cache = {}
-def id_to_random_color(number):
-    if not number in cache:
-        r, g, b = random.randint(0,255),random.randint(0,255),random.randint(0,255)
-        cache[number]= (r, g, b)
-        return r, g, b
-    else:
-        return cache[number]
+
 try:
     out_file = open(f"generated_data/tracks/sort.orb.{videonum}.csv","w+")
     fields = ['Frame No.', 'Vessel ID','X1','Y1','X2','Y2']  

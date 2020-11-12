@@ -3,43 +3,30 @@ import cv2
 import geopy.distance
 from geneticalgorithm import geneticalgorithm as ga
 import random 
-
-def load(video_num):
-    det_frames = dict()
-    with open(f"generated_data/tracks/manual.{video_num}.csv","r") as f:
-        content = f.readlines()
-        content = content[1:] # Skip Header
-    for entry in content:
-        Frame_No, ID, X1, Y1, X2, Y2 = [int(i) for i in entry.split(",")]
-        det_frames[int(Frame_No)] = [X1+((X2 - X1)//2),Y2]
-
-    gps_points = []
-    distorted_points = []
-    with open(f"generated_data/frame2gps/{video_num}.csv","r") as f:
-        content = f.readlines()
-        content = content[1:] # Skip Header
-    for entry in content:
-        Frame_No, Frame_Time, GPS_Time, Latitude, Longitude = entry.split(",")
-        if int(Frame_No) in det_frames:
-            gps_points.append([float(Latitude), float(Longitude)])
-            distorted_points.append(det_frames[int(Frame_No)])
-    return np.array(distorted_points, dtype=np.float64), np.array(gps_points, dtype=np.float64)
-
+from utils.common import *
 fit_videos = [7,16,13,14]
 test_videos = [14,12,10,21]
 
-distorted_points, gps_points = load(fit_videos[0])
+box_points, gps_points = load(fit_videos[0])
 for i in range(1,len(fit_videos)):
-    distorted_points_temp, gps_points_temp = load(fit_videos[i])
-    distorted_points = np.concatenate((distorted_points, distorted_points_temp), axis=0)
+    box_points_temp, gps_points_temp = load(fit_videos[i])
+    box_points = np.concatenate((box_points, box_points_temp), axis=0)
     gps_points = np.concatenate((gps_points, gps_points_temp), axis=0)
 
-distorted_points_test, gps_points_test = load(test_videos[0])
+box_points_test, gps_points_test = load(test_videos[0])
 for i in range(1,len(fit_videos)):
-    distorted_points_temp, gps_points_temp = load(fit_videos[i])
-    distorted_points_test = np.concatenate((distorted_points_test, distorted_points_temp), axis=0)
+    box_points_temp, gps_points_temp = load(fit_videos[i])
+    box_points_test = np.concatenate((box_points_test, box_points_temp), axis=0)
     gps_points_test = np.concatenate((gps_points_test, gps_points_temp), axis=0)
-
+distorted_points = []
+distorted_points_test = []
+for i in range(len(box_points)):
+    X1, Y1, X2, Y2 = box_points[i]
+    distorted_points.append([X1+((X2 - X1)//2),Y2])
+for i in range(len(box_points_test)):
+    X1, Y1, X2, Y2 = box_points_test[i]
+    distorted_points_test.append([X1+((X2 - X1)//2),Y2])
+distorted_points, distorted_points_test = np.array(distorted_points), np.array(distorted_points_test, dtype=np.float64)
 center = 1280 // 2, 720 // 2
 offset = 25
 # f_x, f_y, k1, k2, p1, p2 
@@ -97,43 +84,53 @@ model=ga(function=reprojection_error,\
             variable_boundaries=varbound,\
             algorithm_parameters=algorithm_param)
 
+f_x, f_y, c_x, c_y, k1, k2, p1, p2, median = [], [], [], [], [], [], [], [], []
 from unittest.mock import patch
+def normalize_array(A):
+    A = np.array(A, copy=True)
+    A -= min(A)
+    A /= max(A)
+    return A
+for _ in range(5):
+    with patch('matplotlib.pyplot.show') as p: # Prevent Plot from blocking
+        model.run()
+        best_camera_params["Error"] = dict()
+        ###################################################
+        undistorted_points = cv2.undistortPoints(
+                distorted_points_test.reshape(-1, 1, 2), best_camera_params["Intrinsic Matrix"], best_camera_params["Distortion Coefficients"], P=best_camera_params["Intrinsic Matrix"])
+        gps_projections = cv2.perspectiveTransform(undistorted_points, best_camera_params["Homography"])
+        gps_projections = gps_projections.reshape(-1, 2)
+        # Compute Projection Distance Error
+        ERR = []
+        for i in range(len(gps_projections)):
+            ERR.append(geopy.distance.geodesic(gps_projections[i], gps_points_test[i]).m)
+        best_camera_params["Error"]["Mean"] = np.mean(ERR)
+        best_camera_params["Error"]["Median"] = np.median(ERR)
+        best_camera_params["Error"]["Std"] = np.std(ERR)
 
-with patch('matplotlib.pyplot.show') as p: # Prevent Plot from blocking
-    model.run()
-print(best_camera_params)
-###################################################
-undistorted_points = cv2.undistortPoints(
-        distorted_points_test.reshape(-1, 1, 2), best_camera_params["Intrinsic Matrix"], best_camera_params["Distortion Coefficients"], P=best_camera_params["Intrinsic Matrix"])
-gps_projections = cv2.perspectiveTransform(undistorted_points, best_camera_params["Homography"])
-gps_projections = gps_projections.reshape(-1, 2)
-# Compute Projection Distance Error
-ERR = []
-for i in range(len(gps_projections)):
-    ERR.append(geopy.distance.geodesic(gps_projections[i], gps_points_test[i]).m)
-print(f"""\
-Average Error (m): {np.mean(ERR)}
-Median Error (m): {np.median(ERR)}
-Error Standard Dev (+/- m): {np.std(ERR)}
-""")
+        f_x.append(best_camera_params["Intrinsic Matrix"][0][0])
+        f_y.append(best_camera_params["Intrinsic Matrix"][1][1])
+        c_x.append(best_camera_params["Intrinsic Matrix"][0][2])
+        c_y.append(best_camera_params["Intrinsic Matrix"][1][2])
+        median.append(best_camera_params["Error"]["Median"])
+print("")
+print(f"Average Error (m) {best_camera_params['Error']['Mean']}")
+print(f"Average Error (m) {best_camera_params['Error']['Median']}")
+print(f"Error Standard Deviation (+/- m) {best_camera_params['Error']['Std']}")
+
 from utils.common import plot_gps
 plot_gps([gps_projections, gps_points_test])
 
-# from scipy.stats.kde import gaussian_kde
-# from numpy import linspace
-# import matplotlib.pyplot as plt
-# plt.clf() # Clear Stuff from the runs
+from scipy.stats.kde import gaussian_kde
+from numpy import linspace
+import matplotlib.pyplot as plt
+plt.clf() # Clear Stuff from the runs
 
 
-# # these are the values over wich your kernel will be evaluated
-# dist_space = linspace( 0, 800, 10000 )
-# # plot the results
-# try:
-#     for i in range(8):
-#         data = results[:,i]
-#         # this create the kernel, given an array it will estimate the probability over that values
-#         kde = gaussian_kde(data)
-#         plt.plot( dist_space, kde(dist_space) )
-#     plt.show()
-# except:
-#     pass
+# these are the values over wich your kernel will be evaluated
+dist_space = linspace( 0, 1, 10000 ) # plot the results
+for data in [median]:
+    # this create the kernel, given an array it will estimate the probability over that values
+    kde = gaussian_kde(normalize_array(data))
+    plt.plot(dist_space, kde(dist_space) )
+plt.show()

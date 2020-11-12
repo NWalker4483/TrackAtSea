@@ -20,7 +20,7 @@ parser.add_argument('--cam_lat', type=float, default=32.70297,
                     help='Latitude of source in decimal degrees (i.e. where the camera is mounted')
 parser.add_argument('--cam_long', type=float, default=-117.23463100000001,
                     help='Longitude of source in decimal degrees (i.e. where the camera is mounted')
-parser.add_argument('--tracker_type', type=str, default="Manual",
+parser.add_argument('--tracker_type', type=str, default="MANUAL",
                     help='')
 
 args = parser.parse_args()
@@ -28,8 +28,6 @@ if args.video_num != None:
     args.video_file = f"raw_data/video/{args.video_num}.mp4"
     
 video = cv2.VideoCapture(args.video_file)
-cam = ct.load_camera(args.camera_file_path)
-cam.setGPSpos(args.cam_lat, args.cam_long)
 
 frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 frames_read = 0
@@ -46,7 +44,7 @@ elif args.tracker_type == "ORB":
 elif args.tracker_type == "DEEP":
     pass
 
-elif args.tracker_type == "Manual":
+elif args.tracker_type == "MANUAL":
     from Manual import ManualTracker
 
     def drag(event, x, y, flags, param):

@@ -41,9 +41,6 @@ class MVDATracker():
         self.last_states = []
         self.detections = []
         self.ID = 0 
-        
-    def getAllDetections(self):
-        return self.detections
 
     def getLandmarkVessel(self):
         return self.TB[min(self.TB)[1][-1]] # Return the oldest detection 
@@ -169,11 +166,12 @@ if __name__ == "__main__":
     smp = crop_bottom_half(cap.read()[1])
     out = cv2.VideoWriter('output.mvda.mp4', fourcc, 15,
                         (smp.shape[1],  smp.shape[0]*2))
-    fgbg = MVDATracker(init_frames=50, detecting_rate=3, detections_per_denoising=5,
-                    framerate=20, max_recovery_distance=50, max_HW_ratio=4)
+    fgbg = MVDATracker(init_frames=250, detecting_rate=3, detections_per_denoising=5,
+                    framerate=20, max_recovery_distance=100, max_HW_ratio=4)
     try:
         while(1):
             ret, frame = cap.read()
+            if not ret: break
             frame = crop_bottom_half(frame)
             rects = fgbg.update(frame)
             mask = fgbg.background_mask
