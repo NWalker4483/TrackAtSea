@@ -1,6 +1,7 @@
 import cv2
+
 det_frames = dict()
-with open(f"generated_data/tracks/manual.{video_num}.csv","r") as f:
+with open(f"generated_data/tracks/manual.{args.video_num}.csv","r") as f:
     content = f.readlines()
     content = content[1:] # Skip Header
 for entry in content:

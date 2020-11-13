@@ -1,5 +1,15 @@
+import cv2
+import numpy as np 
+cache = {}
+def id_to_random_color(number):
+    if not number in cache:
+        r, g, b = np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)
+        cache[number]= (r, g, b)
+        return r, g, b
+    else:
+        return cache[number]
 
-# ! And I believe that the below assumption is incorrect from testing
+
 def remove_contained(boxes):  # ? The paper was not clear whether or not partially overlapping or entirely overlapping boxes should be removed as of now only fully overlapping boxes will be
     contained = set()
     final = set()
@@ -13,6 +23,7 @@ def remove_contained(boxes):  # ? The paper was not clear whether or not partial
                         if box != container:
                             contained.add(box)
     return set([box for box in boxes if box not in contained])
+
 
 def merge_boxes(boxes):
     seen = set()
@@ -29,15 +40,13 @@ def merge_boxes(boxes):
             new_boxes.add(boxA)
     return new_boxes if new_boxes == boxes else merge_boxes(new_boxes)
 
-# https://stackoverflow.com/questions/19079619/efficient-way-to-combine-intersecting-bounding-rectangles
-def combineBoundingBox(box1, box2):
+
+def combineBoundingBox(box1, box2): # https://stackoverflow.com/questions/19079619/efficient-way-to-combine-intersecting-bounding-rectangles
     x = min(box1[0], box2[0])
     y = min(box1[1], box2[1])
     w = box2[0] + box2[2] - box1[0]
     h = max(box1[1] + box1[3], box2[1] + box2[3]) - y
     return (x, y, w, h)
-
-# * Can be simplified from the code sample
 
 
 def intersection_over_union(boxA, boxB):
@@ -94,17 +103,7 @@ def distance_between_centers(boxA, boxB):
 def crop_to(img, box):
     return img[box[1]:box[1]+box[3], box[0]:box[0]+box[2]]
 
-import cv2
-import numpy as np 
-cache = {}
-def id_to_random_color(number):
-    if not number in cache:
-        r, g, b = np.random.randint(0,255),np.random.randint(0,255),np.random.randint(0,255)
-        cache[number]= (r, g, b)
-        return r, g, b
-    else:
-        return cache[number]
-        
+
 def load(video_num):
     det_frames = dict()
     with open(f"generated_data/tracks/manual.{video_num}.csv","r") as f:
@@ -125,6 +124,13 @@ def load(video_num):
             gps_points.append([float(Latitude), float(Longitude)])
             distorted_points.append(det_frames[int(Frame_No)])
     return np.array(distorted_points, dtype=np.float64), np.array(gps_points, dtype=np.float64)
+def load_many(video_nums):
+    distorted_points, gps_points = load(video_nums[0])
+    for i in range(1,len(video_nums)):
+        distorted_points_temp, gps_points_temp = load(video_nums[i])
+        distorted_points = np.concatenate((distorted_points, distorted_points_temp), axis=0)
+        gps_points = np.concatenate((gps_points, gps_points_temp), axis=0)
+    return distorted_points, gps_points 
 
 
 def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],[Lat, Long], ...]

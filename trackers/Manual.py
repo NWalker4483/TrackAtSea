@@ -20,7 +20,7 @@ class ManualTracker():
     def getLandmarkVessel(self):
         key = None
         while key != ord("f"):
-            temp = frame.copy()
+            temp = self.last_frame.copy()
             cv2.rectangle(temp, (self.pos[0], self.pos[1]), (self.pos2[0], self.pos2[1]), (255, 0, 0), 2)
             key = cv2.waitKey(1) & 0xFF
             cv2.imshow("Tracker Frame",temp)
@@ -36,9 +36,9 @@ class ManualTracker():
         det = [] 
         self.last_frame = frame 
         if self.frames_read % (self.frame_count // self.num_detections) == 0:
-            loc = tracker.getLandmarkVessel()
+            loc = self.getLandmarkVessel()
             if loc != None: 
-                det = [(self.frames_read,0,loc)]
+                det = [(self.frames_read,-1,loc)]
         self.frames_read += 1
         return det
         # key = cv2.waitKey(1) & 0xFF

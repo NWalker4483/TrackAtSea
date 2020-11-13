@@ -63,13 +63,13 @@ def reprojection_error(X):
         ERR = []
         for i in range(len(gps_projections)):
             ERR.append(distance(gps_projections[i], gps_points[i]))
-        AVG = sum(ERR)/len(gps_projections)
-        if AVG < min_err:
-            min_err = AVG 
+        RMSE = (sum([err ** 2 for err in ERR])/len(ERR))**.5
+        if RMSE < min_err:
+            min_err = RMSE 
             best_camera_params["Homography"] = h
             best_camera_params["Distortion Coefficients"] = dist
             best_camera_params["Intrinsic Matrix"] = mtx
-        return AVG
+        return RMSE
     else:
         return 10e10
 # We definitly dont need this many
@@ -86,11 +86,7 @@ model=ga(function=reprojection_error,\
 
 f_x, f_y, c_x, c_y, k1, k2, p1, p2, median = [], [], [], [], [], [], [], [], []
 from unittest.mock import patch
-def normalize_array(A):
-    A = np.array(A, copy=True)
-    A -= min(A)
-    A /= max(A)
-    return A
+
 for _ in range(5):
     with patch('matplotlib.pyplot.show') as _: # Prevent Plot from blocking the for loop
         model.run()
@@ -107,6 +103,7 @@ for _ in range(5):
         best_camera_params["Error"]["Mean"] = np.mean(ERR)
         best_camera_params["Error"]["Median"] = np.median(ERR)
         best_camera_params["Error"]["Std"] = np.std(ERR)
+        best_camera_params["Error"]["RMSE"] = (sum([err ** 2 for err in ERR])/len(ERR))**.5
 
         f_x.append(best_camera_params["Intrinsic Matrix"][0][0])
         f_y.append(best_camera_params["Intrinsic Matrix"][1][1])
@@ -114,23 +111,29 @@ for _ in range(5):
         c_y.append(best_camera_params["Intrinsic Matrix"][1][2])
         median.append(best_camera_params["Error"]["Median"])
 print("")
-print(f"Average Error (m) {best_camera_params['Error']['Mean']}")
-print(f"Median Error (m) {best_camera_params['Error']['Median']}")
-print(f"Error Standard Deviation (+/- m) {best_camera_params['Error']['Std']}")
+print(f"Average Error (m): {best_camera_params['Error']['Mean']}")
+print(f"Median Error (m): {best_camera_params['Error']['Median']}")
+print(f"Error Standard Deviation (+/- m): {best_camera_params['Error']['Std']}")
+print(f"Root Mean Square Error: {best_camera_params['Error']['RMSE']}")
+
 
 from utils.common import plot_gps
 plot_gps([gps_projections, gps_points_test])
 
-from scipy.stats.kde import gaussian_kde
-from numpy import linspace
-import matplotlib.pyplot as plt
-plt.clf() # Clear Stuff from the runs
+# from scipy.stats.kde import gaussian_kde
+# from numpy import linspace
+# import matplotlib.pyplot as plt
+# plt.clf() # Clear Stuff from the runs
+# def normalize_array(A):
+#     A = np.array(A, copy=True)
+#     A -= min(A)
+#     A /= max(A)
+#     return A
 
-
-# these are the values over wich your kernel will be evaluated
-dist_space = linspace( 0, 1, 10000 ) # plot the results
-for data in [median]:
-    # this create the kernel, given an array it will estimate the probability over that values
-    kde = gaussian_kde(normalize_array(data))
-    plt.plot(dist_space, kde(dist_space) )
-plt.show()
+# # these are the values over wich your kernel will be evaluated
+# dist_space = linspace( 0, 1, 10000 ) # plot the results
+# for data in [median]:
+#     # this create the kernel, given an array it will estimate the probability over that values
+#     kde = gaussian_kde(normalize_array(data))
+#     plt.plot(dist_space, kde(dist_space) )
+# plt.show()
