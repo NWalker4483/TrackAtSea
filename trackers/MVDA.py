@@ -73,7 +73,7 @@ class MVDATracker():
                     continue
                 if ((box_width/box_height) > self.max_HW_ratio) or ((box_height/box_width) > self.max_HW_ratio) or ((box_height*box_width) < self.min_object_area):
                     continue
-                if self.contiansWater(bb.crop_to(gray, rect)):  # * Not Implemented
+                if self.contiansWater(gray[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]):  # * Crop
                     continue
                 boxes.add(rect)
             boxes = bb.merge_boxes(boxes)  # Merge Overlapping Boxes

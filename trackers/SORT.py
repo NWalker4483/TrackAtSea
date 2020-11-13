@@ -6,16 +6,16 @@ sys.path.insert(0, parent_dir)
 from sort.sort import Sort
 import numpy as np
 import cv2
-from trackers.ORB import ORBTracker
 import random
 import csv 
 from utils.common import * 
+from trackers.ORB import ORBTracker
 #create instance of SORT
-mot_tracker = Sort(max_age=10)
+mot_tracker = Sort(max_age=40)
 orb_tracker = ORBTracker() 
 
 # get detections
-videonum = 7
+videonum = 14
 cap = cv2.VideoCapture(f'raw_data/video/{videonum}.mp4')
 
 # Define the codec and create VideoWriter object

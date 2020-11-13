@@ -101,16 +101,17 @@ def distance_between_centers(boxA, boxB):
 
 
 def crop_to(img, box):
-    return img[box[1]:box[1]+box[3], box[0]:box[0]+box[2]]
+    return img
 
 
-def load(video_num):
+def load(video_num,preface = "manual", train = False):
     det_frames = dict()
-    with open(f"generated_data/tracks/manual.{video_num}.csv","r") as f:
+    with open(f"generated_data/tracks/{preface}.{video_num}.csv","r") as f:
         content = f.readlines()
         content = content[1:] # Skip Header
     for entry in content:
         Frame_No, ID, X1, Y1, X2, Y2 = [int(i) for i in entry.split(",")]
+        if train and int(ID) != -1: continue
         det_frames[int(Frame_No)] = [X1, Y1, X2, Y2]
 
     gps_points = []
@@ -124,10 +125,10 @@ def load(video_num):
             gps_points.append([float(Latitude), float(Longitude)])
             distorted_points.append(det_frames[int(Frame_No)])
     return np.array(distorted_points, dtype=np.float64), np.array(gps_points, dtype=np.float64)
-def load_many(video_nums):
+def load_many(video_nums, preface = "manual", train = False):
     distorted_points, gps_points = load(video_nums[0])
     for i in range(1,len(video_nums)):
-        distorted_points_temp, gps_points_temp = load(video_nums[i])
+        distorted_points_temp, gps_points_temp = load(video_nums[i], preface, train)
         distorted_points = np.concatenate((distorted_points, distorted_points_temp), axis=0)
         gps_points = np.concatenate((gps_points, gps_points_temp), axis=0)
     return distorted_points, gps_points 
@@ -145,7 +146,7 @@ def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],
             max_lat = lat if lat > max_lat else max_lat
             min_lon = lon if lon < min_lon else min_lon
             max_lon = lon if lon > max_lon else max_lon
-    print(min_lat,max_lat,min_lon,max_lon)
+    #print(min_lat,max_lat,min_lon,max_lon)
     
     change_per_px = height / (max_lat - min_lat) # Find the largest change in gps 
     if base_img == None:

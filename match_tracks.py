@@ -14,9 +14,6 @@ parser.add_argument('--video_file', type=str, default="raw_data/video/7.mp4",
 
 args = parser.parse_args()
 
-if args.video_num != None:
-    args.video_file = f"raw_data/video/{args.video_num}.mp4"
-
 cap = cv2.VideoCapture(args.video_file)
          
 det_frames = dict()
@@ -60,3 +57,15 @@ while True:
                     matched.add(ID)
     frame_num += 1
 print(matched)
+with open(f"generated_data/tracks/sort.orb.matched.{args.video_num}.csv","w+") as out:
+    fields = ['Frame No.', 'Vessel ID','X1','Y1','X2','Y2']  
+    csvwriter = csv.writer(out)  
+    csvwriter.writerow(fields)  
+
+    for entry in content:
+        Frame_No, ID, X1, Y1, X2, Y2 = [int(i) for i in entry.split(",")]
+        if int(ID) in matched:
+            csvwriter.writerow([Frame_No, -1, X1, Y1, X2, Y2])
+        else:
+            csvwriter.writerow([Frame_No, ID, X1, Y1, X2, Y2])
+

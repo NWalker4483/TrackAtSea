@@ -4,20 +4,13 @@ import geopy.distance
 from geneticalgorithm import geneticalgorithm as ga
 import random 
 from utils.common import *
-fit_videos = [7,16,13]
-test_videos = fit_videos# + [14,12,10,21]
+fit_videos = [7]
+test_videos = [14,12,10,21]
 
-box_points, gps_points = load(fit_videos[0])
-for i in range(1,len(fit_videos)):
-    box_points_temp, gps_points_temp = load(fit_videos[i])
-    box_points = np.concatenate((box_points, box_points_temp), axis=0)
-    gps_points = np.concatenate((gps_points, gps_points_temp), axis=0)
+box_points, gps_points = load_many(fit_videos, preface="sort.orb.matched", train=True)
 
-box_points_test, gps_points_test = load(test_videos[0])
-for i in range(1,len(fit_videos)):
-    box_points_temp, gps_points_temp = load(fit_videos[i])
-    box_points_test = np.concatenate((box_points_test, box_points_temp), axis=0)
-    gps_points_test = np.concatenate((gps_points_test, gps_points_temp), axis=0)
+box_points_test, gps_points_test = load_many(test_videos, train=False)
+
 distorted_points = []
 distorted_points_test = []
 for i in range(len(box_points)):
