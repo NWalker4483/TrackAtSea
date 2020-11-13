@@ -4,8 +4,8 @@ import geopy.distance
 from geneticalgorithm import geneticalgorithm as ga
 import random 
 from utils.common import *
-fit_videos = [7,16,13,14]
-test_videos = [14,12,10,21]
+fit_videos = [7,16,13]
+test_videos = fit_videos# + [14,12,10,21]
 
 box_points, gps_points = load(fit_videos[0])
 for i in range(1,len(fit_videos)):
@@ -92,7 +92,7 @@ def normalize_array(A):
     A /= max(A)
     return A
 for _ in range(5):
-    with patch('matplotlib.pyplot.show') as p: # Prevent Plot from blocking
+    with patch('matplotlib.pyplot.show') as _: # Prevent Plot from blocking the for loop
         model.run()
         best_camera_params["Error"] = dict()
         ###################################################
@@ -115,7 +115,7 @@ for _ in range(5):
         median.append(best_camera_params["Error"]["Median"])
 print("")
 print(f"Average Error (m) {best_camera_params['Error']['Mean']}")
-print(f"Average Error (m) {best_camera_params['Error']['Median']}")
+print(f"Median Error (m) {best_camera_params['Error']['Median']}")
 print(f"Error Standard Deviation (+/- m) {best_camera_params['Error']['Std']}")
 
 from utils.common import plot_gps

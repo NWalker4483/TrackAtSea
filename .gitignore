@@ -1,11 +1,11 @@
 raw_data/
 models/
+temp.*
+test.*
 output.*
+
 __pycache__
-test.*.*
 venv
 .vscode
 .DS_Store
 .ipynb_checkpoints/
-board.jpg
-test_outputs/

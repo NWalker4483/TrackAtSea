@@ -17,7 +17,7 @@ class DEEPTracker():
         self.frames_read = 0
     def update(self, frame):
         cv2.imwrite("temp.jpg", frame)
-        detections = self.detector.detectObjectsFromImage(input_image="temp.jpg", output_image_path="temp2.jpg")
+        detections = self.detector.detectObjectsFromImage(input_image="temp.jpg", output_image_path="temp.2.jpg")
         updates = [(self.frames_read, 0, detection["box_points"]) for detection in detections]
         self.frames_read += 1
         return updates
