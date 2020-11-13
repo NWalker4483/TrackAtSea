@@ -24,9 +24,28 @@ class DEEPTracker():
   
 
 if __name__ == "__main__":
+    import argparse
+    import random
+    import pickle 
+    import csv 
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--video_num', type=int, required=True)
+
+    parser.add_argument('--video_file', type=str, default="raw_data/video/7.mp4",
+                        help='Video file name (MP4 format)')
+    
+    parser.add_argument('--num_detections', type=int, default=20,
+                        help='')
+
+    args = parser.parse_args()
+
+    if args.video_num != None:
+        args.video_file = f"raw_data/video/{args.video_num}.mp4"
+
+    cap = cv2.VideoCapture(args.video_file)
 
     execution_path = os.getcwd()
-    cap = cv2.VideoCapture(os.path.join(execution_path, "raw_data/video", f"{6}.mp4"))
     output_video = cv2.VideoWriter(os.path.join(execution_path, "output.deep.avi"), cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
                                     24, ((int(cap.get(3)), int(cap.get(4)))))
 

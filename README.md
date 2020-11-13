@@ -10,10 +10,10 @@
 
 ## Medium
 
-* raw_data/video/14.mp4 * * *   # Contains an occlusion 
+* raw_data/video/14.mp4 * * *    # Contains an occlusion 
 * raw_data/video/16.mp4 * * *
 * raw_data/video/22.mp4 * * *
-* raw_data/video/17.mp4 * *     # Has a big jump
+* raw_data/video/17.mp4 * *      # Has a big jump
 * raw_data/video/19.mp4 *
 
 ## Hard

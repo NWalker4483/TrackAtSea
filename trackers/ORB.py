@@ -53,7 +53,7 @@ class ORBTracker:
 
         temp = dict()
         for i in self.prev_clusters:
-            if i + 1 > 10: continue # Only search for 10 frames back 
+            if i + 1 > 80: continue # Only search for 80 frames back 
             temp[i+1] = self.prev_clusters[i] 
         self.prev_clusters = temp
         self.prev_clusters[0] = dict()
@@ -66,7 +66,7 @@ class ORBTracker:
                 closest_dist = np.inf 
                 for cluster_id in clusters:
                     distance = dist(avg(clusters[cluster_id]), avg(self.prev_clusters[frames_back][prev_cluster_id])) # * The center of previous clusters could be calibrated and stored though I recalculated here for simplicity when reading the code
-                    if (closest_dist > distance and distance <= 500):
+                    if (closest_dist > distance and distance <= 50):
                         best_id = cluster_id
                         closest_dist = distance
                 if best_id != -1:
@@ -133,6 +133,7 @@ if __name__ == "__main__":
                 x1, y1, x2, y2 = box
                 color = bb.id_to_random_color(ID)
                 cv2.rectangle(img2, (x1, y1), (x2, y2), color, 2)
+                cv2.putText(img2, f'{ID} Detected ', (x2+10, y1), 0, 0.3, (0, 255, 0))
                 csvwriter.writerow(
                     [frame, ID, x1, y1, x2, y2])
             for ID in tracker.prev_clusters[0]:

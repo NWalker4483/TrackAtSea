@@ -4,5 +4,3 @@ a = None
 b = 2
 >>> print(b)
 2
-
-

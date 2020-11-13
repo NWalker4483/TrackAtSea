@@ -48,14 +48,13 @@ try:
     # * Could I optimize this... definitely. Is it worth the mental effort probably not
 
     for video in tqdm.tqdm(frame_times):
-        last_best = None
         results[video] = []
         for frame in frame_times[video]:
             best_reading = None
             best_score = np.inf
             for reading in readings:
                 score = abs(time2secs(frame_times[video][frame]) - time2secs(reading[0]))
-                if (score < best_score) and (0 < score <=5 ): #Check that the score is better the score is less than five seconds from the frame time and check that the reading occurred before the frame was taken
+                if (score < best_score) and (0 < score <= 5): #Check that the score is better the score is less than five seconds from the frame time and check that the reading occurred before the frame was taken
                     best_reading = reading 
                     best_score = score
             if best_reading != None:
@@ -85,7 +84,7 @@ try:
                 next_pnt = [groups[i+1][0][3],groups[i+1][0][4]]
             
                 # Remove Sharp Changes in gps 
-                if dist(prev_pnt, this_pnt) <= dist(prev_pnt, next_pnt):
+                if dist(prev_pnt, this_pnt) <= dist(prev_pnt, next_pnt) * 3: # If the distance between A B is more than three times as large than the distance from a C remove B
                     temp.append(groups[i])
                 else:
                     perfect = False

@@ -11,11 +11,11 @@ import random
 import csv 
 from utils.common import * 
 #create instance of SORT
-mot_tracker = Sort()
+mot_tracker = Sort(max_age=10)
 orb_tracker = ORBTracker() 
 
 # get detections
-videonum = 14
+videonum = 7
 cap = cv2.VideoCapture(f'raw_data/video/{videonum}.mp4')
 
 # Define the codec and create VideoWriter object

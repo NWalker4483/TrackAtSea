@@ -29,7 +29,6 @@ def merge_boxes(boxes):
             new_boxes.add(boxA)
     return new_boxes if new_boxes == boxes else merge_boxes(new_boxes)
 
-
 # https://stackoverflow.com/questions/19079619/efficient-way-to-combine-intersecting-bounding-rectangles
 def combineBoundingBox(box1, box2):
     x = min(box1[0], box2[0])
