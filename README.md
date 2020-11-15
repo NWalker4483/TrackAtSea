@@ -36,3 +36,6 @@ Almost No GPS Data *
 Messy GPS Data * *
 
 Clean GPS Data * * *
+
+The goal of our computations is to determine the intrinsic parameters of the camera and its distortion coefficient such that the frame Represents an undistorted image 
+

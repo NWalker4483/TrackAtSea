@@ -19,7 +19,7 @@ for i in range(len(box_points)):
 for i in range(len(box_points_test)):
     X1, Y1, X2, Y2 = box_points_test[i]
     distorted_points_test.append([X1+((X2 - X1)//2),Y2])
-distorted_points, distorted_points_test = np.array(distorted_points, dtype = np.float64), np.array(distorted_points_test, dtype=np.float64)
+distorted_points, distorted_points_test = np.array(distorted_points), np.array(distorted_points_test, dtype=np.float64)
 center = 1280 // 2, 720 // 2
 offset = 25
 # f_x, f_y, k1, k2, p1, p2 
@@ -44,6 +44,13 @@ def reprojection_error(X):
     # Undistort detection points # https://stackoverflow.com/questions/22027419/bad-results-when-undistorting-points-using-opencv-in-python
     undistorted_points = cv2.undistortPoints(
         distorted_points.reshape(-1, 1, 2), mtx, dist, P=mtx)
+    
+    # Find the rotation and translation vectors.
+    ret, rvecs, tvecs = cv.solvePnP(objp, undistorted_points, mtx, dist) # https://docs.opencv.org/master/d7/d53/tutorial_py_pose.html
+    
+    # project 3D points to image plane
+    imgpts, jac = cv.projectPoints(axis, rvecs, tvecs, mtx, dist)
+    
     # Compute Homography
     # choices = np.random.randint(0,len(distorted_points), size=4)
     h, status = cv2.findHomography(undistorted_points, gps_points, cv2.RANSAC)
@@ -87,6 +94,7 @@ for _ in range(5):
         ###################################################
         undistorted_points = cv2.undistortPoints(
                 distorted_points_test.reshape(-1, 1, 2), best_camera_params["Intrinsic Matrix"], best_camera_params["Distortion Coefficients"], P=best_camera_params["Intrinsic Matrix"])
+        print(undistorted_points.shape)
         gps_projections = cv2.perspectiveTransform(undistorted_points, best_camera_params["Homography"])
         gps_projections = gps_projections.reshape(-1, 2)
         # Compute Projection Distance Error

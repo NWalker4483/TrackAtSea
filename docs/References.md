@@ -43,3 +43,6 @@ https://math.stackexchange.com/questions/302093/how-to-calculate-the-lens-distor
 
 Oclusion
 http://users.ics.forth.gr/~argyros/mypapers/2010_07_journal_cviu_occlusions.pdf
+
+Explaining what the heck homography means
+https://stackoverflow.com/questions/12070411/what-do-the-elements-in-a-homography-matrix-mean/12074568
