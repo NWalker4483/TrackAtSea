@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>14.300.png</filename>
+	<path>/Users/nilewalker/Projects/GitHub/MsuTrackingAI/generated_data/target_ship/train/images/14.300.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>target</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>456</xmin>
+			<ymin>422</ymin>
+			<xmax>516</xmax>
+			<ymax>451</ymax>
+		</bndbox>
+	</object>
+</annotation>

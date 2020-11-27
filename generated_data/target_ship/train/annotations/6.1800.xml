@@ -1,7 +1,7 @@
 <annotation>
 	<folder>images</folder>
 	<filename>6.1800.png</filename>
-	<path>/Users/nilewalker/Projects/GitHub/MsuTrackingAI/generated_data/images/6.1800.png</path>
+	<path>/Users/nilewalker/Projects/GitHub/MsuTrackingAI/generated_data/target_ship/train/images/6.1800.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -21,18 +21,6 @@
 			<ymin>418</ymin>
 			<xmax>301</xmax>
 			<ymax>466</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>target</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>214</xmin>
-			<ymin>418</ymin>
-			<xmax>248</xmax>
-			<ymax>443</ymax>
 		</bndbox>
 	</object>
 </annotation>

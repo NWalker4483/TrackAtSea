@@ -94,9 +94,10 @@ for _ in range(5):
         ###################################################
         undistorted_points = cv2.undistortPoints(
                 distorted_points_test.reshape(-1, 1, 2), best_camera_params["Intrinsic Matrix"], best_camera_params["Distortion Coefficients"], P=best_camera_params["Intrinsic Matrix"])
-        print(undistorted_points.shape)
+
         gps_projections = cv2.perspectiveTransform(undistorted_points, best_camera_params["Homography"])
         gps_projections = gps_projections.reshape(-1, 2)
+
         # Compute Projection Distance Error
         ERR = []
         for i in range(len(gps_projections)):

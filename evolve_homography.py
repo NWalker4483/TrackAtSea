@@ -4,11 +4,14 @@ import geopy.distance
 from geneticalgorithm import geneticalgorithm as ga
 import random 
 from utils.common import *
-fit_videos = [7,12,14]
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+
+fit_videos = [7,12,14,10,16]
 test_videos = [10,16]
 
-box_points, gps_points = load_many(fit_videos)#, preface="sort.orb.matched", train=True
-
+box_points, gps_points = load_many(fit_videos)#, preface="sort.orb.matched", train=True)
 box_points_test, gps_points_test = load_many(test_videos)
 
 distorted_points = []
@@ -19,6 +22,7 @@ for i in range(len(box_points)):
 for i in range(len(box_points_test)):
     X1, Y1, X2, Y2 = box_points_test[i]
     distorted_points_test.append([X1+((X2 - X1)//2),Y2])
+
 distorted_points, distorted_points_test = np.array(distorted_points, dtype = np.float64), np.array(distorted_points_test, dtype=np.float64)
 center = 1280 // 2, 720 // 2
 offset = 25
@@ -31,6 +35,7 @@ min_err = np.inf
 best_camera_params = dict()
 def distance(p1, p2):
     return (((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2)) ** .5
+
 def reprojection_error(X):
     global min_err, best_h
 
@@ -45,8 +50,9 @@ def reprojection_error(X):
     undistorted_points = cv2.undistortPoints(
         distorted_points.reshape(-1, 1, 2), mtx, dist, P=mtx)
     # Compute Homography
-    # choices = np.random.randint(0,len(distorted_points), size=4)
-    h, status = cv2.findHomography(undistorted_points, gps_points, cv2.RANSAC)
+    choices = np.random.randint(0,len(distorted_points), size=10)
+    h, status = cv2.findHomography(undistorted_points[choices], gps_points[choices], cv2.RANSAC)
+    
     if type(h) != type(None):
         # Compute New Projections # https://stackoverflow.com/questions/55055655/how-to-use-cv2-perspectivetransform-to-apply-homography-on-a-set-of-points-in
         gps_projections = cv2.perspectiveTransform(undistorted_points, h)
@@ -62,6 +68,18 @@ def reprojection_error(X):
             best_camera_params["Homography"] = h
             best_camera_params["Distortion Coefficients"] = dist
             best_camera_params["Intrinsic Matrix"] = mtx
+    
+            fig = Figure()
+            canvas = FigureCanvas(fig)
+            ax = fig.gca()
+            ax.scatter(gps_projections[:,0],gps_projections[:,1],c=ERR/max(ERR),cmap="Reds")
+            ax.scatter(gps_points[:,0],gps_points[:,1], marker="x")#,c=colors,cmap="bwr")
+
+            canvas.print_figure("output.png")
+            frame = plt.imread("output.png")
+            image_without_alpha = frame[:,:,:3]
+            frame = np.uint8(255 * image_without_alpha)
+            out.write(frame)
         return RMSE
     else:
         return 10e10
@@ -79,7 +97,11 @@ model=ga(function=reprojection_error,\
 
 f_x, f_y, c_x, c_y, k1, k2, p1, p2, median = [], [], [], [], [], [], [], [], []
 from unittest.mock import patch
-
+shape = (480, 640, 4)
+# Define the codec and create VideoWriter object
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter('output.mp4', fourcc, 15,
+                    (shape[1],  shape[0]))
 for _ in range(5):
     with patch('matplotlib.pyplot.show') as _: # Prevent Plot from blocking the for loop
         model.run()
@@ -103,6 +125,7 @@ for _ in range(5):
         c_x.append(best_camera_params["Intrinsic Matrix"][0][2])
         c_y.append(best_camera_params["Intrinsic Matrix"][1][2])
         median.append(best_camera_params["Error"]["Median"])
+out.release()
 print("")
 print(f"Average Error (m): {best_camera_params['Error']['Mean']}")
 print(f"Median Error (m): {best_camera_params['Error']['Median']}")
@@ -110,14 +133,25 @@ print(f"Error Standard Deviation (+/- m): {best_camera_params['Error']['Std']}")
 print(f"Root Mean Square Error: {best_camera_params['Error']['RMSE']}")
 
 print(best_camera_params["Homography"])
+import pickle
+pickle.dump(best_camera_params, open( "best_camera_params.pkl", "wb" ))
 from utils.common import plot_gps
 img = plot_gps([ gps_projections, gps_points_test])
+
 
 # from scipy.stats.kde import gaussian_kde
 # from numpy import linspace
 # import matplotlib.pyplot as plt
 # plt.clf() # Clear Stuff from the runs
 # def normalize_array(A):
+
+# Joe Adams A & E Technologies Rapid Autonomy Integration Labs Automated Testing and Evaluation Software
+# Matt Veneda Operations Research Modeling and Simulation 
+# Mark been there 20 years Unnmaned Underwater Vehicles. Creating Standards for autonomous systems, UUV  
+# David From Raytheon EMA Kinda works under Joe 
+# 
+# Look Up 
+# ICD ICL 
 #     A = np.array(A, copy=True)
 #     A -= min(A)
 #     A /= max(A)
