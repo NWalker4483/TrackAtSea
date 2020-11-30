@@ -17,7 +17,7 @@ args = parser.parse_args()
 cap = cv2.VideoCapture(args.video_file)
          
 det_frames = dict()
-with open(f"generated_data/tracks/sort.orb.{args.video_num}.csv","r") as f:
+with open(f"generated_data/tracks/orb.{args.video_num}.csv","r") as f:
     content = f.readlines()
     content = content[1:] # Skip Header
 for entry in content:
@@ -26,7 +26,7 @@ for entry in content:
         det_frames[int(Frame_No)].append((ID, [X1, Y1, X2, Y2]))
     else:
         det_frames[int(Frame_No)] = [(ID,[X1, Y1, X2, Y2])]
-
+# 0855cdf3360580f4cdff5a4de450c19f9a63b3a6
 def scaleROI(box, scale = 2):
     X1, Y1, X2, Y2 = box 
     NX1 = X1 - (X2 - X1) * (scale - 1)/ 2 
@@ -57,7 +57,7 @@ while True:
                     matched.add(ID)
     frame_num += 1
 print(matched)
-with open(f"generated_data/tracks/sort.orb.matched.{args.video_num}.csv","w+") as out:
+with open(f"generated_data/tracks/orb.matched.{args.video_num}.csv","w+") as out:
     fields = ['Frame No.', 'Vessel ID','X1','Y1','X2','Y2']  
     csvwriter = csv.writer(out)  
     csvwriter.writerow(fields)  

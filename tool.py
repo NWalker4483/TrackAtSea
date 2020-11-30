@@ -40,6 +40,10 @@ elif args.tracker_type == "ORB":
     from MVDA import MVDATracker
     tracker = MVDATracker(init_frames=50, detecting_rate=1,
                           detections_per_denoising=5, framerate=20, max_recovery_distance=50)
+elif args.tracker_type == "SORT":
+    from MVDA import MVDATracker
+    tracker = MVDATracker(init_frames=50, detecting_rate=1,
+                          detections_per_denoising=5, framerate=20, max_recovery_distance=50)
 
 elif args.tracker_type == "DEEP":
     pass
@@ -61,8 +65,8 @@ elif args.tracker_type == "MANUAL":
     tracker = ManualTracker()
     dragging = False
 else:
-    print("Some Error Msg")
-    exit()
+    print("No tracker of the name exists")
+    raise(KeyError)
 
 out_file = open(f"generated_data/outputs/{args.video_num}.{args.tracker_type.lower()}.csv","w+")
 fields = ['Frame No.', 'Vessel ID', 'Latitude', 'Longitude', 'X', 'Y']  
