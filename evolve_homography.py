@@ -9,10 +9,10 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
 fit_videos = [7,12,14,10,16]
-test_videos = [10,16]
+test_videos = [14,12]
 
-box_points, gps_points = load_many(fit_videos)#, preface="sort.orb.matched", train=True)
-box_points_test, gps_points_test = load_many(test_videos)
+box_points, gps_points = load_many(fit_videos, train=True)#, preface="sort.orb.matched", train=True) # 
+box_points_test, gps_points_test = load_many(test_videos, preface="orb", train=True)
 
 distorted_points = []
 distorted_points_test = []
