@@ -20,6 +20,9 @@ parser.add_argument('--cam_long', type=float, default=-117.23463100000001,
                     help='Longitude of source in decimal degrees (i.e. where the camera is mounted')
 parser.add_argument('--tracker_type', type=str, default="ORB",
                     help='')
+parser.add_argument('--detection_file', type=str, default=None,
+                    help='')
+
 
 args = parser.parse_args()
 if args.video_file == None:
@@ -69,12 +72,15 @@ while video.isOpened():
         for frame_num, ID, box in det:
             if frame_num not in detections: detections[frame_num] = dict()
             detections[frame_num][ID] = box
+            
 # Determine Landmark Track
 from match_tracks import match_tracks
 print("Matching...")
 tracks = match_tracks(detections, args.video_file)
+
 # Load Homography and Camera Coefficients 
 params = pickle.load(open("generated_data/best_camera_params.pkl","rb"))
+
 # Generate and save results 
 out_file = open(f"outputs/{args.video_num}.{args.tracker_type.lower()}.csv","w+")
 fields = ['Frame No.', 'Vessel ID', 'Latitude', 'Longitude', 'X', 'Y']  
