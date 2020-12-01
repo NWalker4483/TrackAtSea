@@ -34,14 +34,6 @@ frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 if args.tracker_type == "ORB":
     from trackers.ORB import ORBTracker
     tracker = ORBTracker(Land_at=420)
-
-# elif args.tracker_type == "SORT":
-#     from trackers.SORT import SORTTracker
-#     tracker = MVDATracker(init_frames=50, detecting_rate=1,
-#                           detections_per_denoising=5, framerate=20, max_recovery_distance=50)
-elif args.tracker_type == "DEEP":
-    pass
-
 elif args.tracker_type == "MANUAL":
     from trackers.MANUAL import ManualTracker
     def drag(event, x, y, flags, param):
@@ -57,6 +49,12 @@ elif args.tracker_type == "MANUAL":
     cv2.setMouseCallback("Tracker Frame", drag)
     tracker = ManualTracker(frame_count, args.num_detections)
     dragging = False
+# elif args.tracker_type == "SORT":
+#     from trackers.SORT import SORTTracker
+#     tracker = MVDATracker(init_frames=50, detecting_rate=1,
+#                           detections_per_denoising=5, framerate=20, max_recovery_distance=50)
+# elif args.tracker_type == "DEEP":
+#     pass
 else:
     print("No tracker of the name exists")
     raise(KeyError)
@@ -72,7 +70,7 @@ while video.isOpened():
         for frame_num, ID, box in det:
             if frame_num not in detections: detections[frame_num] = dict()
             detections[frame_num][ID] = box
-            
+
 # Determine Landmark Track
 from match_tracks import match_tracks
 print("Matching...")
