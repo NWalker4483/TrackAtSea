@@ -8,8 +8,6 @@ def random_bbox(H, W,max_H, max_W):
     y2 = rnd.randint(y1,y1+max_H)
     return (x1, y1, x2, y2)
     
-
-    
 def rip_frames(vid_path, out_path=None):
     '''
     Brief:

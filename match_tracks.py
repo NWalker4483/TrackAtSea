@@ -26,7 +26,9 @@ for entry in content:
         det_frames[int(Frame_No)].append((ID, [X1, Y1, X2, Y2]))
     else:
         det_frames[int(Frame_No)] = [(ID,[X1, Y1, X2, Y2])]
-# 0855cdf3360580f4cdff5a4de450c19f9a63b3a6
+def match_tracks(tracks):
+    return tracks
+
 def scaleROI(box, scale = 2):
     X1, Y1, X2, Y2 = box 
     NX1 = X1 - (X2 - X1) * (scale - 1)/ 2 

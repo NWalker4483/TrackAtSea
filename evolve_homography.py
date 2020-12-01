@@ -8,11 +8,11 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
-fit_videos = [7,12,14,10,16]
-test_videos = [14,12]
+fit_videos = [7,16]
+test_videos = [7,12,10,16]
 
-box_points, gps_points = load_many(fit_videos, train=True)#, preface="sort.orb.matched", train=True) # 
-box_points_test, gps_points_test = load_many(test_videos, preface="orb", train=True)
+box_points, gps_points = load_many(fit_videos)#, preface="sort.orb.matched", train=True) # 
+box_points_test, gps_points_test = load_many(test_videos)#, preface="orb", train=True)
 
 distorted_points = []
 distorted_points_test = []
@@ -134,9 +134,9 @@ print(f"Root Mean Square Error: {best_camera_params['Error']['RMSE']}")
 
 print(best_camera_params["Homography"])
 import pickle
-pickle.dump(best_camera_params, open( "best_camera_params.pkl", "wb" ))
+pickle.dump(best_camera_params, open( "generated_data/best_camera_params.pkl", "wb" ))
 from utils.common import plot_gps
-img = plot_gps([ gps_projections, gps_points_test])
+img = plot_gps([ gps_projections, gps_points_test], colors = [(255,0,0),(0,0,255)])
 
 
 # from scipy.stats.kde import gaussian_kde

@@ -134,7 +134,7 @@ def load_many(video_nums, preface = "manual", train = False):
     return distorted_points, gps_points 
 
 
-def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],[Lat, Long], ...]
+def plot_gps(data, height = 7000, buffer = 1000, base_img=None,colors = None): # [[Lat, Long],[Lat, Long], ...]
     # Normalize
     min_lat = np.inf
     max_lat = -np.inf
@@ -150,13 +150,14 @@ def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],
     
     change_per_px = height / (max_lat - min_lat) # Find the largest change in gps 
     if base_img == None:
-        base_img = np.ones((buffer + int(change_per_px * (max_lon - min_lon)),buffer + height ,3))
+        base_img = np.ones((buffer + int(change_per_px * (max_lon - min_lon)),buffer + height ,3)) * 255
+    if colors == None:
+        colors = [tuple([np.random.randint(0,255) for _ in range(3)]) for i in range(len(data))]
     legend_y = int(50 * (height/1000))
     i = 1
     for path in data:
         path = np.array(path)
-        color = tuple([np.random.randint(0,255) for _ in range(3)])
-        
+        color = colors[i-1]
         base_img = cv2.putText(base_img, f'Path {i}', (50, legend_y*i), cv2.FONT_HERSHEY_SIMPLEX ,  
                            height/1000, color, 7, cv2.LINE_AA) 
         i+=1
@@ -167,6 +168,6 @@ def plot_gps(data, height = 7000, buffer = 1000, base_img=None): # [[Lat, Long],
         for d_lat, d_lon in path[1:]:
             point = ((buffer//4) + int(d_lat * change_per_px), (buffer//4) + int(d_lon * change_per_px))
             base_img = cv2.circle(base_img, point,10, color, -1) 
-            base_img = cv2.line(base_img, last_point, point, color, 4) 
+            base_img = cv2.line(base_img, last_point, point, color, 10) 
             last_point = point
     cv2.imwrite("gps.png",base_img)
