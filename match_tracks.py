@@ -45,9 +45,9 @@ def match_tracks(detections, video_name, thresh=10, scale=4):
                     boat_score = probabilities[0] if predictions[0] == 'boat' else probabilities[1]
                     if boat_score >= 65:
                         a+= 1
-                        print(predictions,probabilities,a)
-                        cv2.imshow("",img)
-                        cv2.waitKey(1)
+                        # print(predictions,probabilities,a)
+                        # cv2.imshow("",img)
+                        # cv2.waitKey(1)
                         scores[ID] = scores[ID] + 1 if ID in scores else 1
                         if scores[ID] >= thresh:
                             matched.add(ID)

@@ -10,7 +10,7 @@ parser.add_argument('--video_num', type=int, default=6)
 
 parser.add_argument('--video_file', type=str,
                     help='Video file name (MP4 format)')
-parser.add_argument('--num_detections', type=int, default=15,
+parser.add_argument('--num_detections', type=int, default=25,
                     help='')
 parser.add_argument('--camera_file_path', type=str, default="generated_data/best_camera_params.pkl",
                     help='')
@@ -73,7 +73,7 @@ while video.isOpened():
 
 print("Matching...")
 from match_tracks import match_tracks
-tracks = match_tracks(detections, args.video_file)
+tracks = match_tracks(detections, args.video_file, thresh=10, scale=5)
 
 # Load Homography and Camera Coefficients 
 params = pickle.load(open("generated_data/best_camera_params.pkl","rb"))
@@ -104,7 +104,9 @@ try:
         gps_projections = cv2.perspectiveTransform(undistorted_points, params["Homography"])
         gps_projections = gps_projections.reshape(-1, 2)
         
-        for i in range(len(frames)):
+        det_count = len(frames)
+        for i in range(det_count):
+            if i % (det_count // args.num_detections) != 0: continue
             lat, lon = gps_projections[i]
             x, y = distorted_points[i][0][0], distorted_points[i][1][0]
             csvwriter.writerow([frames[i], ID, lat, lon, x, y])
