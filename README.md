@@ -9,6 +9,8 @@ There are 2 ways to run Seahawk
 1) Locally via python virtual environment
 2) Docker via https://hub.docker.com/r/emichris/seahawk
 
+> Please note that Seahawk has been developed and tested on Python 3.7
+
 #### Preparing the ENV
 
 You may skip this step if your developmental environment is already setup
