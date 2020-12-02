@@ -43,9 +43,8 @@ def match_tracks(detections, video_name, thresh=3, scale=4):
                     cv2.imwrite("temp.1.jpg", img)
                     predictions, probabilities = prediction.predictImage("temp.1.jpg", result_count=2)
                     print(predictions,probabilities)
-                    dets = []
-                    
-                    if probabilities[0] > .5:
+
+                    if probabilities[0] > .6:
                         cv2.imshow("",img)
                         cv2.waitKey(1)
                         scores[ID] = scores[ID] + 1 if ID in scores else 1
