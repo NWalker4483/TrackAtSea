@@ -4,6 +4,11 @@ An ensemble AI-CV system for the "AI Tracks at Sea" Challenge.
 
 ## Getting Started
 
+There are 2 ways to run Seahawk
+
+1) Locally via python virtual environment
+2) Docker via https://hub.docker.com/r/emichris/seahawk
+
 #### Preparing the ENV
 
 You may skip this step if your developmental environment is already setup
@@ -41,7 +46,7 @@ pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-
 
 #### Running the Seahawk
 
-Since `tools.py` has default arguments, simply running is sufficient to run *Seahawk*
+Since `tools.py` has default arguments, simply running is the command below in your terminal sufficient to run *Seahawk*
 
 ```bash
 python tool.py
@@ -57,7 +62,7 @@ python tool.py --help
 
 To avoid collisions between vehicles and crafts, current traffic avoidance systems depend on older technologies such as RADAR and automatic identification systems (AIS). To improve unmanned surface vehicles’ (USVs’) capacity to detect and track maritime traffic, computer vision systems can offer a wide range of possibilities that are not bound by the constraints of the current RF system.
 
-In response to the AI Tracks at Sea (AITaS) challenge, the team at Morgan State University, the Morgan Bears, are proposing “Seahawk”: an ensemble system consisting of artificial intelligence (AI) and computer vision (CV) techniques. This white paper describes the core concepts, the methodology of the system design and implementation, and the early result of this novel application of AI/ML infused CV systems for XX.
+In response to the AI Tracks at Sea (AITaS) challenge, the team at Morgan State University, the Morgan Bears, are proposing “Seahawk”: an ensemble system consisting of artificial intelligence (AI) and computer vision (CV) techniques. This white paper describes the core concepts, the methodology of the system design and implementation, and the early result of this novel application of AI/ML infused CV systems to improve maritime detection and tracking.
 
 ## System Architecture
 
@@ -69,7 +74,7 @@ Since there is no effective means of traditional calibration, a genetic algorith
 
 ## Data Assessment
 
-This arranges the video files according to a rudimentary classification, based on the perceived ease of 
+This arranges the video files according to a rudimentary classification, based on the perceived ease of detecting and isolating the target vessel.
 
 #### Easy
 
