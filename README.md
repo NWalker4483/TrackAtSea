@@ -4,6 +4,11 @@ An ensemble AI-CV system for the "AI Tracks at Sea" Challenge.
 
 ## Getting Started
 
+There are 2 ways to run Seahawk
+
+1) Locally via python virtual environment
+2) Docker via https://hub.docker.com/r/emichris/seahawk
+
 #### Preparing the ENV
 
 You may skip this step if your developmental environment is already setup
