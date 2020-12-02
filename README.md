@@ -36,6 +36,7 @@ pip install --upgrade pip
 
 ```bash
 pip install -r requirepments.txt
+pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
 ```
 
 #### Running the Seahawk
@@ -63,7 +64,6 @@ In response to the AI Tracks at Sea (AITaS) challenge, the team at Morgan State 
 As mentioned previously, and shown in Figure 1, the Seahawk pipeline implements a frame-by-frame motion detector using Oriented FAST and Rotated BRIEF (ORB) for fast robust local feature detection which, in turn, generates associated frame ID, detector name, vessel ID, and bounding box for every frame. This information is fed to the target classification model to classify the target vessel among all detected motions. The Classification Model is already trained on classifying our custom object (target vessel).
 
 ![Seahawk data sequence flow](seahawk-data-sequence-flow.png)
-
 
 Since there is no effective means of traditional calibration, a genetic algorithm was implemented which guesses at the intrinsic matrix parameter (translation parameter) of the camera (e.g. focal length, distortion coefficient) and determines potential homographies that will as accurately as possible, translate the target vessels projected location onto the planar geometry of the sea surface to facilitate GPS localization. This evaluation process continues until the best possible translation parameter is elucidated in which case, it is utilized for subsequent computations.
 
@@ -109,4 +109,3 @@ Messy GPS Data * *
 Clean GPS Data * * *
 
 The goal of our computations is to determine the intrinsic parameters of the camera and its distortion coefficient such that the frame Represents an undistorted image 
-

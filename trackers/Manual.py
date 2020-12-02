@@ -41,8 +41,6 @@ class ManualTracker():
                 det = [(self.frames_read,-1,loc)]
         self.frames_read += 1
         return det
-        # key = cv2.waitKey(1) & 0xFF
-        # cv2.imshow("Tracker Frame", self.last_frame)
         
 if __name__ == "__main__":
     import argparse

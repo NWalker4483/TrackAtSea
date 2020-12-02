@@ -70,8 +70,9 @@ while video.isOpened():
             detections[frame_num][ID] = box
 
 # Determine Landmark Track
-from match_tracks import match_tracks
+
 print("Matching...")
+from match_tracks import match_tracks
 tracks = match_tracks(detections, args.video_file)
 
 # Load Homography and Camera Coefficients 
@@ -84,7 +85,7 @@ csvwriter = csv.writer(out_file)
 csvwriter.writerow(fields)  
 
 out_file2 = open(f"outputs/{args.video_num}.{args.tracker_type.lower()}.main.csv","w+")
-mainwriter = csv.writer(out_file)  
+mainwriter = csv.writer(out_file2)  
 mainwriter.writerow(fields)  
 try:
     print("Projecting...")
@@ -102,6 +103,7 @@ try:
 
         gps_projections = cv2.perspectiveTransform(undistorted_points, params["Homography"])
         gps_projections = gps_projections.reshape(-1, 2)
+        
         for i in range(len(frames)):
             lat, lon = gps_projections[i]
             x, y = distorted_points[i][0][0], distorted_points[i][1][0]

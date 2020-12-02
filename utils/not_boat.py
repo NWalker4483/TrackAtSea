@@ -31,14 +31,12 @@ def rip_frames(vid_path, out_path=None):
             print("Ripping frames...")
             while success:
                 if (count % 100) == 0:
-                    for i in range(5):
-
-                        path = os.path.join(out_path, f"{vid_path.split('/')[-1].split('.')[0]}.{count}.{i}.png")
-                        box = random_bbox(image.shape[0],image.shape[1],500,500)
-                        try:
-                            cv2.imwrite(path, image[box[1]:box[3], box[0]:box[2]])
-                        except:
-                            pass
+                    path = os.path.join(out_path, f"{vid_path.split('/')[-1].split('.')[0]}.{count}.0.png")
+                    box = random_bbox(image.shape[0],image.shape[1],500,500)
+                    try:
+                        cv2.imwrite(path, image[box[1]:box[3], box[0]:box[2]])
+                    except:
+                        pass
                 success,image = vidcap.read()
                 count += 1
             print("Saved {} frames to {}.".format(count, out_path))
@@ -47,4 +45,4 @@ def rip_frames(vid_path, out_path=None):
 
 if __name__ == "__main__":
     for i in range(6,23):
-        rip_frames(f"raw_data/video/{i}.mp4","generated_data/target_ship/train/not")
+        rip_frames(f"raw_data/video/{i}.mp4","generated_data/dataset/test/not_ship")
