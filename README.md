@@ -44,6 +44,12 @@ pip install -r requirements.txt
 pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
 ```
 
+**ALTERNATIVELY**, you can run `getting-started.sh` in order to automatically set up your python environment.
+
+```bash
+bash ./getting-started.sh
+```
+
 #### Running the Seahawk
 
 Since `tools.py` has default arguments, simply running is the command below in your terminal sufficient to run *Seahawk*
