@@ -69,7 +69,7 @@ Since there is no effective means of traditional calibration, a genetic algorith
 
 ## Data Assessment
 
-This arranges the video files according to a rudimentary classification, based on the perceived ease of 
+This arranges the video files according to a rudimentary classification, based on the perceived ease of detecting and isolating the target vessel.
 
 #### Easy
 
