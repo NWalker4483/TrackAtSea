@@ -1,7 +1,7 @@
 # MSMS
 
 ## Easy
-
+pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
 * raw_data/video/7.mp4 * * *
 * raw_data/video/9.mp4 * *       # Has a big jump 
 * raw_data/video/15.mp4 * *      # Not as bad as 9 

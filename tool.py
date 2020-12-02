@@ -84,7 +84,7 @@ csvwriter = csv.writer(out_file)
 csvwriter.writerow(fields)  
 
 out_file2 = open(f"outputs/{args.video_num}.{args.tracker_type.lower()}.main.csv","w+")
-mainwriter = csv.writer(out_file)  
+mainwriter = csv.writer(out_file2)  
 mainwriter.writerow(fields)  
 try:
     print("Projecting...")
@@ -96,12 +96,14 @@ try:
             X, Y = [X1+((X2 - X1)//2),Y2]
             frames.append(frame_num)
             distorted_points.append([[X],[Y]])
+
         if len(distorted_points) == 0: continue
         undistorted_points = cv2.undistortPoints(
                 np.array(distorted_points, dtype=np.float64), params["Intrinsic Matrix"], params["Distortion Coefficients"], P=params["Intrinsic Matrix"])
 
         gps_projections = cv2.perspectiveTransform(undistorted_points, params["Homography"])
         gps_projections = gps_projections.reshape(-1, 2)
+        
         for i in range(len(frames)):
             lat, lon = gps_projections[i]
             x, y = distorted_points[i][0][0], distorted_points[i][1][0]
