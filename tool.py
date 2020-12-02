@@ -53,8 +53,6 @@ elif args.tracker_type == "MANUAL":
 #     from trackers.SORT import SORTTracker
 #     tracker = MVDATracker(init_frames=50, detecting_rate=1,
 #                           detections_per_denoising=5, framerate=20, max_recovery_distance=50)
-# elif args.tracker_type == "DEEP":
-#     pass
 else:
     print("No tracker of the name exists")
     raise(KeyError)
@@ -84,6 +82,10 @@ out_file = open(f"outputs/{args.video_num}.{args.tracker_type.lower()}.csv","w+"
 fields = ['Frame No.', 'Vessel ID', 'Latitude', 'Longitude', 'X', 'Y']  
 csvwriter = csv.writer(out_file)  
 csvwriter.writerow(fields)  
+
+out_file2 = open(f"outputs/{args.video_num}.{args.tracker_type.lower()}.main.csv","w+")
+mainwriter = csv.writer(out_file)  
+mainwriter.writerow(fields)  
 try:
     print("Projecting...")
     for ID in tracks:
@@ -104,5 +106,8 @@ try:
             lat, lon = gps_projections[i]
             x, y = distorted_points[i][0][0], distorted_points[i][1][0]
             csvwriter.writerow([frames[i], ID, lat, lon, x, y])
+            if ID == -1:
+                mainwriter.writerow([frames[i], ID, lat, lon, x, y])
 finally:
     out_file.close()
+    out_file2.close()
