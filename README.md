@@ -35,7 +35,7 @@ pip install --upgrade pip
 5) Install requirement
 
 ```bash
-pip install -r requirepments.txt
+pip install -r requirements.txt
 pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
 ```
 
