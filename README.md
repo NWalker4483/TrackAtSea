@@ -9,6 +9,8 @@ There are 2 ways to run Seahawk
 1) Locally via python virtual environment
 2) Docker via https://hub.docker.com/r/emichris/seahawk
 
+> Please note that Seahawk has been developed and tested on Python 3.7
+
 #### Preparing the ENV
 
 You may skip this step if your developmental environment is already setup
@@ -42,6 +44,12 @@ pip install --upgrade pip
 ```bash
 pip install -r requirements.txt
 pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
+```
+
+> **ALTERNATIVELY**, you can run `getting-started.sh` in order to automatically set up your python environment.
+
+```bash
+bash ./getting-started.sh
 ```
 
 #### Running the Seahawk
