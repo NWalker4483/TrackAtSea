@@ -15,7 +15,7 @@ def scaleROI(box, scale=2):
     return [int(NX1), int(NY1), int(NX2), int(NY2)]
 
 
-def match_tracks(detections, video_name, thresh=3, scale=4):
+def match_tracks(detections, video_name, thresh=10, scale=4):
     matched = set()
     scores = dict()
     frame_num = 0
@@ -25,9 +25,9 @@ def match_tracks(detections, video_name, thresh=3, scale=4):
     prediction = CustomImagePrediction()
     prediction.setModelTypeAsResNet()
     prediction.setModelPath("models/resnet_model.h5")
-    prediction.setJsonPath("resnet_model_class.json")
+    prediction.setJsonPath("models/resnet_model_class.json")
     prediction.loadModel(num_objects=2)
-
+    a = 0 
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -42,9 +42,10 @@ def match_tracks(detections, video_name, thresh=3, scale=4):
 
                     cv2.imwrite("temp.1.jpg", img)
                     predictions, probabilities = prediction.predictImage("temp.1.jpg", result_count=2)
-                    print(predictions,probabilities)
-
-                    if probabilities[0] > .6:
+                    boat_score = probabilities[0] if predictions[0] == 'boat' else probabilities[1]
+                    if boat_score >= 65:
+                        a+= 1
+                        print(predictions,probabilities,a)
                         cv2.imshow("",img)
                         cv2.waitKey(1)
                         scores[ID] = scores[ID] + 1 if ID in scores else 1
@@ -63,5 +64,7 @@ def match_tracks(detections, video_name, thresh=3, scale=4):
             else:
                 if len(tracks[ID]) >= 3 * 20:
                     tracks[ID][frame_num] = detections[frame_num][ID]
-    print(tracks,detections)
+    
     return tracks
+if __name__ == '__main__':
+    match_tracks(dict({0:dict({12:[0,0,500,500]})}), f"raw_data/video/{6}.mp4")

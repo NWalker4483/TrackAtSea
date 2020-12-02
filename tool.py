@@ -70,8 +70,9 @@ while video.isOpened():
             detections[frame_num][ID] = box
 
 # Determine Landmark Track
-from match_tracks import match_tracks
+
 print("Matching...")
+from match_tracks import match_tracks
 tracks = match_tracks(detections, args.video_file)
 
 # Load Homography and Camera Coefficients 
