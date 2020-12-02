@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 import geopy.distance
 from geneticalgorithm import geneticalgorithm as ga
-import random 
 from utils.common import *
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -40,7 +39,6 @@ def reprojection_error(X):
     global min_err, best_h
 
     # Camera Matrix and Distortion Coefficients
-    # px, py, f, sx, sy, pan, tilt, swing, tx, ty, tz
     f_x, f_y, c_x, c_y, k1, k2, p1, p2 = X
     mtx = np.array([[f_x, 0, c_x],
                     [0, f_y, c_y],
