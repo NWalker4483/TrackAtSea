@@ -4,6 +4,10 @@ An ensemble AI-CV system for the "AI Tracks at Sea" Challenge.
 
 ## Getting Started
 
+#### Preparing the ENV
+
+You may skip this step if your developmental environment is already setup
+
 1) Download the repository
 
 ```bash
@@ -32,6 +36,20 @@ pip install --upgrade pip
 
 ```bash
 pip install -r requirepments.txt
+```
+
+#### Running the Seahawk
+
+Since `tools.py` has default arguments, simply running is sufficient to run *Seahawk*
+
+```bash
+python tool.py
+```
+
+For more help run 
+
+```bash
+python tool.py --help
 ```
 
 ## Introduction
