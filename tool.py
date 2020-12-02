@@ -96,7 +96,6 @@ try:
             X, Y = [X1+((X2 - X1)//2),Y2]
             frames.append(frame_num)
             distorted_points.append([[X],[Y]])
-
         if len(distorted_points) == 0: continue
         undistorted_points = cv2.undistortPoints(
                 np.array(distorted_points, dtype=np.float64), params["Intrinsic Matrix"], params["Distortion Coefficients"], P=params["Intrinsic Matrix"])

@@ -8,4 +8,3 @@ venv
 .vscode
 .DS_Store
 .ipynb_checkpoints/
-models/yolo_detection_model.h5
